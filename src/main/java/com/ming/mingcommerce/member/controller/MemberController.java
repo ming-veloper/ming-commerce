@@ -9,10 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +28,12 @@ public class MemberController {
         }
         RegisterResponse response = memberService.register(registerRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/email-duplication-check")
+    public ResponseEntity<?> isEmailDuplicated(@RequestParam String email) {
+        boolean duplicatedEmail = memberService.isDuplicatedEmail(email);
+        Map<String, Boolean> result = Map.of("isDuplicated", duplicatedEmail);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

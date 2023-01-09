@@ -7,3 +7,7 @@
 ==== 회원 등록
 
 operation::register-member[]
+
+=== 이메일 중복 여부 체크
+
+operation::check-email-duplication[]

@@ -18,6 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,6 +78,23 @@ class MemberControllerTest {
                 ))
 
         ;
+    }
+
+    @Test
+    @DisplayName("이메일 중복 여부를 체크한다")
+    void checkEmailDuplication() throws Exception {
+        mockMvc.perform(get("/api/members/email-duplication-check")
+                        .param("email", "tester@gmail.com")
+                )
+                .andExpect(status().isOk())
+                .andDo(document("check-email-duplication",
+                        queryParameters(
+                                parameterWithName("email").description("중복 여부를 체크할 이메일")
+                        ),
+                        responseFields(
+                                fieldWithPath("isDuplicated").description("이메일 중복 여부")
+                        )
+                ));
     }
 
     @Test
