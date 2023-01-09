@@ -22,7 +22,7 @@ public class JwtTokenService {
     /**
      * 사용자 고유 식별이 가능한 uuid 와 memberName 이 담긴 액세스 토큰과 리프레시 토큰을 생성한다.
      *
-     * @param uuid 사용자 고유 식별키
+     * @param uuid       사용자 고유 식별키
      * @param memberName 사용자의 이름
      * @return access token, refresh token
      */
