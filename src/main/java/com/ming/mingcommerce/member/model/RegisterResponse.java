@@ -1,5 +1,13 @@
 package com.ming.mingcommerce.member.model;
 
-public class RegisterResponse {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@RequiredArgsConstructor
+public class RegisterResponse {
+    private final String accessToken;
+    private final String refreshToken;
 }

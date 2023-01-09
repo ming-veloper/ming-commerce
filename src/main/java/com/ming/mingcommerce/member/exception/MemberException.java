@@ -18,4 +18,14 @@ public class MemberException extends RuntimeException {
             super(message);
         }
     }
+
+    public static class EmailDuplicatedException extends MemberException {
+        protected EmailDuplicatedException() {
+            super();
+        }
+
+        public EmailDuplicatedException(String message) {
+            super(message);
+        }
+    }
 }

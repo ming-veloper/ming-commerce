@@ -1,0 +1,9 @@
+= Ming Commerce API Document
+
+== Member
+
+=== /api/members
+
+==== 회원 등록
+
+operation::register-member[]

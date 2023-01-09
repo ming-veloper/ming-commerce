@@ -22,13 +22,12 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerMember(@Valid @RequestBody RegisterRequest registerRequest,
-                                            BindingResult result) {
+    public ResponseEntity<RegisterResponse> registerMember(@Valid @RequestBody RegisterRequest registerRequest,
+                                                           BindingResult result) {
         if (result.hasErrors()) {
             throw new MemberException.MemberRegisterFailedException("invalid request data");
         }
         RegisterResponse response = memberService.register(registerRequest);
-
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
