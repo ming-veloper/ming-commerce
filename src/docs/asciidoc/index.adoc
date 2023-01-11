@@ -21,12 +21,14 @@ https://github.com/ming-veloper/ming-commerce[Github]
 
 == Member
 
-=== /api/members
-
-==== 회원 등록
+=== 회원 등록
 
 operation::register-member[]
 
-==== 이메일 중복 여부 체크
+=== 이메일 중복 여부 체크
 
 operation::check-email-duplication[]
+
+=== 로그인
+
+operation::login[]

@@ -1,4 +1,4 @@
-package com.ming.mingcommerce.member.service;
+package com.ming.mingcommerce.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -10,14 +10,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class JwtTokenServiceTest {
+class JwtTokenUtilTest {
     @Autowired
-    JwtTokenService jwtTokenService;
+    JwtTokenUtil jwtTokenService;
     @Value("${jwt.access-token-duration}")
     private Long accessTokenDuration;
 
@@ -42,9 +41,8 @@ class JwtTokenServiceTest {
     @Test
     @DisplayName("액세스 토큰과 리프레시 토큰을 생성한다")
     void issueToken() {
-        String uuid = UUID.randomUUID().toString();
-        String memberName = "testUser";
-        JwtTokenModel tokenModel = jwtTokenService.issueToken(uuid, memberName);
+        String email = "tester@gmail.com";
+        JwtTokenModel tokenModel = jwtTokenService.issueToken(email);
         assertThat(tokenModel).hasFieldOrProperty("refreshToken");
         assertThat(tokenModel).hasFieldOrProperty("accessToken");
 

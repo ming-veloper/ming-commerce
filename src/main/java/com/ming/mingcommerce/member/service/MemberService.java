@@ -6,6 +6,7 @@ import com.ming.mingcommerce.member.model.JwtTokenModel;
 import com.ming.mingcommerce.member.model.RegisterRequest;
 import com.ming.mingcommerce.member.model.RegisterResponse;
 import com.ming.mingcommerce.member.repository.MemberRepository;
+import com.ming.mingcommerce.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +22,7 @@ import static java.lang.String.format;
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final JwtTokenService tokenService;
+    private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -38,12 +39,10 @@ public class MemberService {
 
         // save member
         Member member = modelMapper.map(registerRequest, Member.class);
-        Member savedMember = memberRepository.save(member);
+        memberRepository.save(member);
 
         // issue token
-        String memberName = savedMember.getMemberName();
-        String uuid = savedMember.getUuid();
-        JwtTokenModel tokenModel = tokenService.issueToken(uuid, memberName);
+        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(email);
 
         return new RegisterResponse(tokenModel.getAccessToken(), tokenModel.getRefreshToken());
     }
