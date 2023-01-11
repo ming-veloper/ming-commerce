@@ -441,9 +441,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <body class="book toc2 toc-left">
 <div id="header">
 <h1>Ming Commerce API Document</h1>
-<div class="details">
-<span id="revnumber">version 0.0.1-SNAPSHOT</span>
-</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel2">
@@ -451,10 +448,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_git">GIT :</a></li>
 <li><a href="#_member">Member</a>
 <ul class="sectlevel2">
-<li><a href="#_apimembers">/api/members</a>
-<ul class="sectlevel3">
 <li><a href="#_회원_등록">회원 등록</a>
-<ul class="sectlevel4">
+<ul class="sectlevel3">
 <li><a href="#_회원_등록_curl_request">Curl request</a></li>
 <li><a href="#_회원_등록_http_request">HTTP request</a></li>
 <li><a href="#_회원_등록_http_response">HTTP response</a></li>
@@ -466,7 +461,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_이메일_중복_여부_체크">이메일 중복 여부 체크</a>
-<ul class="sectlevel4">
+<ul class="sectlevel3">
 <li><a href="#_이메일_중복_여부_체크_curl_request">Curl request</a></li>
 <li><a href="#_이메일_중복_여부_체크_http_request">HTTP request</a></li>
 <li><a href="#_이메일_중복_여부_체크_http_response">HTTP response</a></li>
@@ -475,8 +470,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_이메일_중복_여부_체크_request_body">Request body</a></li>
 <li><a href="#_이메일_중복_여부_체크_response_body">Response body</a></li>
 <li><a href="#_이메일_중복_여부_체크_response_fields">Response fields</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><a href="#_로그인">로그인</a>
@@ -520,11 +513,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_member"><a class="link" href="#_member">Member</a></h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_apimembers"><a class="link" href="#_apimembers">/api/members</a></h3>
+<h3 id="_회원_등록"><a class="link" href="#_회원_등록">회원 등록</a></h3>
 <div class="sect3">
-<h4 id="_회원_등록"><a class="link" href="#_회원_등록">회원 등록</a></h4>
-<div class="sect4">
-<h5 id="_회원_등록_curl_request"><a class="link" href="#_회원_등록_curl_request">Curl request</a></h5>
+<h4 id="_회원_등록_curl_request"><a class="link" href="#_회원_등록_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/members/register' -i -X POST \
@@ -533,8 +524,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_회원_등록_http_request"><a class="link" href="#_회원_등록_http_request">HTTP request</a></h5>
+<div class="sect3">
+<h4 id="_회원_등록_http_request"><a class="link" href="#_회원_등록_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/members/register HTTP/1.1
@@ -546,8 +537,8 @@ Host: localhost:8080
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_회원_등록_http_response"><a class="link" href="#_회원_등록_http_response">HTTP response</a></h5>
+<div class="sect3">
+<h4 id="_회원_등록_http_response"><a class="link" href="#_회원_등록_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
@@ -564,8 +555,8 @@ Content-Length: 444
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_회원_등록_httpie_request"><a class="link" href="#_회원_등록_httpie_request">HTTPie request</a></h5>
+<div class="sect3">
+<h4 id="_회원_등록_httpie_request"><a class="link" href="#_회원_등록_httpie_request">HTTPie request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ echo '{"email":"test@gmail.com","password":"helloTester!@#","memberName":"tester"}' | http POST 'http://localhost:8080/api/members/register' \
@@ -573,16 +564,16 @@ Content-Length: 444
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_회원_등록_request_body"><a class="link" href="#_회원_등록_request_body">Request body</a></h5>
+<div class="sect3">
+<h4 id="_회원_등록_request_body"><a class="link" href="#_회원_등록_request_body">Request body</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{"email":"test@gmail.com","password":"helloTester!@#","memberName":"tester"}</code></pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_회원_등록_request_fields"><a class="link" href="#_회원_등록_request_fields">Request fields</a></h5>
+<div class="sect3">
+<h4 id="_회원_등록_request_fields"><a class="link" href="#_회원_등록_request_fields">Request fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -615,16 +606,16 @@ Content-Length: 444
 </tbody>
 </table>
 </div>
-<div class="sect4">
-<h5 id="_회원_등록_response_body"><a class="link" href="#_회원_등록_response_body">Response body</a></h5>
+<div class="sect3">
+<h4 id="_회원_등록_response_body"><a class="link" href="#_회원_등록_response_body">Response body</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{"accessToken":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2NzQwNDM2MzUsImlhdCI6MTY3MzQzODgzNSwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSJ9.fh9l6LMsi_m7XlztSwiG9qxTzu7tegawQCGwEVHgaCye2s3kHcws0dWClpU-MamuwrPT_nDvNzam_RWdLZMQrg","refreshToken":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2NzU4NTgwMzUsImlhdCI6MTY3MzQzODgzNSwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSJ9.7H1u4fybje9K610TzWURLvOyDHzes7jHkuxtd3dVLTa4MsSohnUaoVuV_C_7z_uvBItWeTOYbuDzIXbgIhYCIQ"}</code></pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_회원_등록_response_fields"><a class="link" href="#_회원_등록_response_fields">Response fields</a></h5>
+<div class="sect3">
+<h4 id="_회원_등록_response_fields"><a class="link" href="#_회원_등록_response_fields">Response fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -653,18 +644,18 @@ Content-Length: 444
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_이메일_중복_여부_체크"><a class="link" href="#_이메일_중복_여부_체크">이메일 중복 여부 체크</a></h3>
 <div class="sect3">
-<h4 id="_이메일_중복_여부_체크"><a class="link" href="#_이메일_중복_여부_체크">이메일 중복 여부 체크</a></h4>
-<div class="sect4">
-<h5 id="_이메일_중복_여부_체크_curl_request"><a class="link" href="#_이메일_중복_여부_체크_curl_request">Curl request</a></h5>
+<h4 id="_이메일_중복_여부_체크_curl_request"><a class="link" href="#_이메일_중복_여부_체크_curl_request">Curl request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/api/members/email-duplication-check?email=tester%40gmail.com' -i -X GET</code></pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_이메일_중복_여부_체크_http_request"><a class="link" href="#_이메일_중복_여부_체크_http_request">HTTP request</a></h5>
+<div class="sect3">
+<h4 id="_이메일_중복_여부_체크_http_request"><a class="link" href="#_이메일_중복_여부_체크_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/members/email-duplication-check?email=tester%40gmail.com HTTP/1.1
@@ -672,8 +663,8 @@ Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_이메일_중복_여부_체크_http_response"><a class="link" href="#_이메일_중복_여부_체크_http_response">HTTP response</a></h5>
+<div class="sect3">
+<h4 id="_이메일_중복_여부_체크_http_response"><a class="link" href="#_이메일_중복_여부_체크_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -690,16 +681,16 @@ Content-Length: 22
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_이메일_중복_여부_체크_httpie_request"><a class="link" href="#_이메일_중복_여부_체크_httpie_request">HTTPie request</a></h5>
+<div class="sect3">
+<h4 id="_이메일_중복_여부_체크_httpie_request"><a class="link" href="#_이메일_중복_여부_체크_httpie_request">HTTPie request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ http GET 'http://localhost:8080/api/members/email-duplication-check?email=tester%40gmail.com'</code></pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_이메일_중복_여부_체크_query_parameters"><a class="link" href="#_이메일_중복_여부_체크_query_parameters">Query parameters</a></h5>
+<div class="sect3">
+<h4 id="_이메일_중복_여부_체크_query_parameters"><a class="link" href="#_이메일_중복_여부_체크_query_parameters">Query parameters</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -719,24 +710,24 @@ Content-Length: 22
 </tbody>
 </table>
 </div>
-<div class="sect4">
-<h5 id="_이메일_중복_여부_체크_request_body"><a class="link" href="#_이메일_중복_여부_체크_request_body">Request body</a></h5>
+<div class="sect3">
+<h4 id="_이메일_중복_여부_체크_request_body"><a class="link" href="#_이메일_중복_여부_체크_request_body">Request body</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-none hljs"></code></pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_이메일_중복_여부_체크_response_body"><a class="link" href="#_이메일_중복_여부_체크_response_body">Response body</a></h5>
+<div class="sect3">
+<h4 id="_이메일_중복_여부_체크_response_body"><a class="link" href="#_이메일_중복_여부_체크_response_body">Response body</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{"isDuplicated":false}</code></pre>
 </div>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_이메일_중복_여부_체크_response_fields"><a class="link" href="#_이메일_중복_여부_체크_response_fields">Response fields</a></h5>
+<div class="sect3">
+<h4 id="_이메일_중복_여부_체크_response_fields"><a class="link" href="#_이메일_중복_여부_체크_response_fields">Response fields</a></h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -758,7 +749,6 @@ Content-Length: 22
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -893,8 +883,7 @@ Content-Length: 450
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-01-11 20:59:50 +0900
+Last updated 2023-01-11 21:08:11 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

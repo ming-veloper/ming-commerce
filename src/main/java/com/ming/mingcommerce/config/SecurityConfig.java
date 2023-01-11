@@ -26,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final MemberRepository memberRepository;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -41,7 +42,7 @@ public class SecurityConfig {
 
         // 커스텀 로그인 필터 적용
         LoginFilter loginFilter = new LoginFilter(authenticationManager(http));
-        loginFilter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtTokenService()));
+        loginFilter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtTokenUtil));
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -56,10 +57,6 @@ public class SecurityConfig {
         return new CustomUserDetailsService(memberRepository);
     }
 
-    @Bean
-    JwtTokenUtil jwtTokenService() {
-        return new JwtTokenUtil();
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception {
