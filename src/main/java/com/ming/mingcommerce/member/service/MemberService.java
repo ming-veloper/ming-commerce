@@ -6,6 +6,7 @@ import com.ming.mingcommerce.member.model.JwtTokenModel;
 import com.ming.mingcommerce.member.model.RegisterRequest;
 import com.ming.mingcommerce.member.model.RegisterResponse;
 import com.ming.mingcommerce.member.repository.MemberRepository;
+import com.ming.mingcommerce.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +22,7 @@ import static java.lang.String.format;
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final JwtTokenService tokenService;
+    private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -38,12 +39,10 @@ public class MemberService {
 
         // save member
         Member member = modelMapper.map(registerRequest, Member.class);
-        Member savedMember = memberRepository.save(member);
+        memberRepository.save(member);
 
         // issue token
-        String memberName = savedMember.getMemberName();
-        String uuid = savedMember.getUuid();
-        JwtTokenModel tokenModel = tokenService.issueToken(uuid, memberName);
+        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(email);
 
         return new RegisterResponse(tokenModel.getAccessToken(), tokenModel.getRefreshToken());
     }
@@ -51,7 +50,7 @@ public class MemberService {
     /**
      * 이메일 중복 여부를 체크한다.
      *
-     * @param email
+     * @param email 이메일
      * @return 중복되었다면 true 를 반환하고, 중복이 아니라면 false 를 반환한다.
      */
     public boolean isDuplicatedEmail(String email) {

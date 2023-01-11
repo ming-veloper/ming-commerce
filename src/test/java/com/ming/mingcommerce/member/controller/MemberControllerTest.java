@@ -1,7 +1,7 @@
 package com.ming.mingcommerce.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ming.mingcommerce.member.entity.Member;
+import com.ming.mingcommerce.member.model.LoginRequest;
 import com.ming.mingcommerce.member.model.RegisterRequest;
 import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.member.service.MemberService;
@@ -43,6 +43,7 @@ class MemberControllerTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
 
     @AfterEach
     void afterEach() {
@@ -98,17 +99,63 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("로그인 - 성공")
+    void login() throws Exception {
+        String email = "tester@gmail.com";
+        String password = "tester123!@";
+
+        createTestMember(email, password);
+
+        LoginRequest loginRequest = new LoginRequest(email, password);
+        String data = objectMapper.writeValueAsString(loginRequest);
+
+        mockMvc.perform(post("/api/login")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(data))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("accessToken").exists())
+                .andExpect(jsonPath("refreshToken").exists())
+                .andDo(document("login", requestFields(
+                                fieldWithPath("email").description("로그인을 진행할 이메일"),
+                                fieldWithPath("password").description("비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("accessToken").description("액세스토큰. 7일간 유효하다"),
+                                fieldWithPath("refreshToken").description("리프레시토큰. 30일간 유효하다")
+                        )));
+    }
+
+    @Test
+    @DisplayName("로그인 - 비밀번호 불일치로 실패")
+    void login_fail_by_wrong_password() throws Exception {
+        String email = "tester@gmail.com";
+        String password = "tester123!@";
+
+        createTestMember(email, password);
+
+        String wrongPassword = "tester123";
+        LoginRequest loginRequest = new LoginRequest(email, wrongPassword);
+        String data = objectMapper.writeValueAsString(loginRequest);
+
+        mockMvc.perform(post("/api/login")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(data))
+
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
     @DisplayName("회원가입 실패 - 이메일 중복")
     void registerFail_DuplicatedEmail() throws Exception {
         String email = "test@gmail.com";
-        String memberName = "tester";
+        String password = "tester123!@";
 
-        createTestMember(email, memberName);
+        createTestMember(email, password);
 
         RegisterRequest data = RegisterRequest.builder()
                 .email(email)
-                .password("helloTester!@#")
-                .memberName(memberName)
+                .password(password)
                 .build();
 
         mockMvc.perform(post("/api/members/register")
@@ -118,16 +165,14 @@ class MemberControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
-    private void createTestMember(String email, String memberName) {
+
+    private void createTestMember(String email, String password) {
         RegisterRequest registerRequest = RegisterRequest.builder()
                 .email(email)
-                .password("helloTester!@#")
-                .memberName(memberName)
+                .password(password)
+                .memberName("tester")
                 .build();
 
-        Member member = modelMapper.map(registerRequest, Member.class);
-
-        memberRepository.save(member);
+        memberService.register(registerRequest);
     }
-
 }

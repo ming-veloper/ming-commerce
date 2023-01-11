@@ -1,9 +1,6 @@
 package com.ming.mingcommerce.member.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,5 +14,7 @@ public class Member {
     private String email;
     private String password;
     private String memberName;
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
 }
