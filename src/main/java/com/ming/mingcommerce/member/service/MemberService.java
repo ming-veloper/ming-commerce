@@ -50,7 +50,7 @@ public class MemberService {
     /**
      * 이메일 중복 여부를 체크한다.
      *
-     * @param email 이메일
+     * @param email
      * @return 중복되었다면 true 를 반환하고, 중복이 아니라면 false 를 반환한다.
      */
     public boolean isDuplicatedEmail(String email) {

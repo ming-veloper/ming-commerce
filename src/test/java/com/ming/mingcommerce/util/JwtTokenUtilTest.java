@@ -1,9 +1,8 @@
-package com.ming.mingcommerce.member.service;
+package com.ming.mingcommerce.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.ming.mingcommerce.member.model.JwtTokenModel;
-import com.ming.mingcommerce.util.JwtTokenUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import java.util.Date;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class JwtTokenServiceTest {
+class JwtTokenUtilTest {
     @Autowired
     JwtTokenUtil jwtTokenService;
     @Value("${jwt.access-token-duration}")
