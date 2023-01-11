@@ -1,4 +1,23 @@
-= Ming Commerce API Document
+ifndef::snippets[]
+:snippets: build/generated-snippets
+endif::[]
+:doctitle: Ming Commerce API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+MingCommerce 백엔드 API 문서입니다.
+
+=== JIRA :
+
+https://ming-commerce.atlassian.net/jira/software/projects/MING/boards/4/roadmap[MingCommerce]
+
+=== GIT :
+
+https://github.com/ming-veloper/ming-commerce[Github]
 
 == Member
 
@@ -8,6 +27,6 @@
 
 operation::register-member[]
 
-=== 이메일 중복 여부 체크
+==== 이메일 중복 여부 체크
 
 operation::check-email-duplication[]

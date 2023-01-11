@@ -50,6 +50,13 @@ tasks.named('test') {
 }
 
 asciidoctor {
+    doFirst {
+        var indexfile = file("src/main/resources/static/docs/index.html")
+        if (indexfile.delete()) {
+            println "기존 문서가 삭제되었습니다."
+        }
+    }
+
     inputs.dir snippetsDir
     configurations 'asciidoctorExt'
     dependsOn test
