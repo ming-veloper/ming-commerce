@@ -17,14 +17,19 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
-
+    @Column(nullable = false)
     private String productName;
+
+    @Column(nullable = false)
     private String thumbnailImageUrl;
     private Integer price;
+
+    @Column(nullable = false)
     private String description;
     @ElementCollection
     private List<String> productImageUrl;
 
     @OneToOne
+    @JoinColumn(nullable = false)
     private Category category;
 }
