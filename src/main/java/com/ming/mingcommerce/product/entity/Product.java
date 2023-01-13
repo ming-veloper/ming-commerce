@@ -22,7 +22,7 @@ public class Product {
 
     @Column(nullable = false)
     private String thumbnailImageUrl;
-    private Integer price;
+    private String price;
 
     @Column(nullable = false)
     private String description;

@@ -32,7 +32,7 @@ class ProductTest {
                 .productImageUrl(List.of("https://m.media-amazon.com/images/I/81rUkJ7owXL._SL1500_.jpg", "https://m.media-amazon.com/images/I/913UOn3IttL._SL1500_.jpg"))
                 .description("Start your day with tasty pastry crust and sweet strawberry flavor; A delicious morning treat that’s great for kids and adults")
                 .category(category)
-                .price((int) 13.9)
+                .price("13.9")
                 .thumbnailImageUrl("https://m.media-amazon.com/images/I/81HnwYDxSlL._AC_UL640_FMwebp_QL65_.jpg")
                 .build();
 
