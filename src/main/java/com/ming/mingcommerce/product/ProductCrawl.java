@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.modelmapper.ModelMapper;
@@ -44,18 +45,21 @@ public class ProductCrawl {
         Category category = new Category(CategoryName.DAIRY_EGGS);
         categoryRepository.save(category);
 
-
         elements.forEach(element -> {
             ProductRequest product = new ProductRequest();
-            // 상세 정보 링크 추출
-            // TODO 상세링크에서 상품이미지들과 상품상세설명 정보 저장
-            String detailLink = element.getElementsByClass("a-link-normal").attr("href");
-            // 상품 썸네일 링크 추출
-            String thumbnailLink = element.getElementsByClass("s-image").attr("src");
-            product.setThumbnailImageUrl(thumbnailLink);
             // 상품 이름 추출
             String productName = element.getElementsByClass("a-size-base-plus").html();
             product.setProductName(productName);
+
+            // 상세 정보 링크 추출
+            // TODO 상세 링크에서 상품 이미지들과 상품 상세설명 정보 저장
+            String detailLink = element.getElementsByClass("s-underline-text").attr("href");
+            // String description = parseDescription(detailLink);
+            //product.setDescription(description);
+
+            // 상품 썸네일 링크 추출
+            String thumbnailLink = element.getElementsByClass("s-image").attr("src");
+            product.setThumbnailImageUrl(thumbnailLink);
 
             // 상품 가격 추출. 가격이 없다면 "undefined" 으로 세팅 한다.
             String price = element.getElementsByClass("a-offscreen").html();
@@ -78,5 +82,24 @@ public class ProductCrawl {
                 .map(p -> modelMapper.map(p, Product.class)).toList();
 
         productRepository.saveAll(products);
+    }
+
+    private String parseDescription(String detailLink) {
+        detailLink = "https://www.amazon.com" + detailLink;
+        Connection conn = Jsoup.connect(detailLink)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
+                .timeout(10000);
+        Document document = null;
+        try {
+            document = conn.get();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Document parser = document.parser(Parser.htmlParser());
+
+        Elements elements = parser.getElementsByClass("a-unordered-list").tagName("span");
+        List<String> description = elements.stream().map(Element::html).toList();
+
+        return String.join(",", description);
     }
 }
