@@ -1,14 +1,19 @@
 package com.ming.mingcommerce.util;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ming.mingcommerce.member.model.JwtTokenModel;
+import com.ming.mingcommerce.security.CurrentUser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
+@Slf4j
 public class JwtTokenUtil {
     @Value("${jwt.access-token-duration}")
     private long accessTokenDuration;
@@ -26,7 +31,7 @@ public class JwtTokenUtil {
      * @return access token, refresh token
      */
 
-    public JwtTokenModel issueToken(String email) {
+    public JwtTokenModel issueToken(String email, String role) {
 
         long now = System.currentTimeMillis();
 
@@ -35,18 +40,39 @@ public class JwtTokenUtil {
                 .withIssuedAt(new Date(now))
                 .withExpiresAt(new Date(now + accessTokenDuration))
                 .withClaim("email", email)
+                .withClaim("role", role)
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
                 .withIssuedAt(new Date(now))
                 .withExpiresAt(new Date(now + refreshTokenDuration))
                 .withClaim("email", email)
+                .withClaim("role", role)
                 .sign(algorithm);
 
         return JwtTokenModel.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    /**
+     * JWT 토큰을 검증하고 jwt 토큰에 claim 값으로 있는 이메일과 권한을 반환한다.
+     *
+     * @param token jwt 토큰
+     * @return 유저의 이메일
+     */
+    public CurrentUser verifyToken(String token) {
+
+        Algorithm algorithm = Algorithm.HMAC512(jwtSecretKey);
+        JWTVerifier verifier = JWT.require(algorithm)
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(token);
+        String email = decodedJWT.getClaim("email").asString();
+        String role = decodedJWT.getClaim("role").asString();
+
+        return new CurrentUser(email, role);
     }
 
 

@@ -3,6 +3,7 @@ package com.ming.mingcommerce.config;
 import com.ming.mingcommerce.filter.LoginFilter;
 import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.security.CustomAuthenticationProvider;
+import com.ming.mingcommerce.security.CustomAuthorizationFilter;
 import com.ming.mingcommerce.security.CustomUserDetailsService;
 import com.ming.mingcommerce.security.LoginSuccessHandler;
 import com.ming.mingcommerce.util.JwtTokenUtil;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -32,9 +34,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
+                        // Permit all
                         .requestMatchers(HttpMethod.POST, "/api/members/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/members/email-duplication-check").permitAll()
+                        // Only for ADMIN
+                        .requestMatchers("/api/product-crawl").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf().disable()
@@ -44,6 +49,10 @@ public class SecurityConfig {
         LoginFilter loginFilter = new LoginFilter(authenticationManager(http));
         loginFilter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtTokenUtil));
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // 커스텀 인가 필터 적용
+        CustomAuthorizationFilter authorizationFilter = new CustomAuthorizationFilter(jwtTokenUtil);
+        http.addFilterAt(authorizationFilter, AuthorizationFilter.class);
         return http.build();
     }
 

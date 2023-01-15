@@ -42,7 +42,7 @@ public class MemberService {
         memberRepository.save(member);
 
         // issue token
-        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(email);
+        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(email, "USER");
 
         return new RegisterResponse(tokenModel.getAccessToken(), tokenModel.getRefreshToken());
     }
@@ -50,7 +50,7 @@ public class MemberService {
     /**
      * 이메일 중복 여부를 체크한다.
      *
-     * @param email
+     * @param email 이메일
      * @return 중복되었다면 true 를 반환하고, 중복이 아니라면 false 를 반환한다.
      */
     public boolean isDuplicatedEmail(String email) {
