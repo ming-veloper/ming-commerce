@@ -5,6 +5,7 @@ import com.ming.mingcommerce.member.entity.Role;
 import com.ming.mingcommerce.member.model.LoginRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,8 @@ import java.util.Set;
 @Component
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${admin.email}")
+    private String adminEmail;
 
     public LoginFilter(AuthenticationManager authenticationManager) {
         super("/api/login", authenticationManager);
@@ -41,7 +44,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
         Role role = Role.USER;
         // 로그인 하는 이메일이 admin@ming.com 일 경우에 ADMIN 권한 부여
-        if (Objects.equals(loginRequest.getEmail(), "admin@ming.com")) {
+        if (Objects.equals(loginRequest.getEmail(), adminEmail)) {
             role = Role.ADMIN;
         }
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -29,7 +30,7 @@ public class ProductCrawl {
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
 
-    public void crawl() throws IOException {
+    public Map<String, String> crawl() throws IOException {
         String url = "https://www.amazon.com/s?k=food&i=grocery&rh=n%3A16310101%2Cn%3A16310231&dc&ds=v1%3AK6elEP%2FxWS5G08aQFEAGWinE3FGmr5b9KnvuAMfes%2BI&crid=16I887VJBBHI1&qid=1673512801&rnid=16310101&sprefix=fo%2Caps%2C300&ref=sr_nr_n_3";
         Connection conn = Jsoup.connect(url)
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
@@ -82,6 +83,8 @@ public class ProductCrawl {
                 .map(p -> modelMapper.map(p, Product.class)).toList();
 
         productRepository.saveAll(products);
+
+        return Map.of("message", "product successfully inserted");
     }
 
     private String parseDescription(String detailLink) {
@@ -89,7 +92,7 @@ public class ProductCrawl {
         Connection conn = Jsoup.connect(detailLink)
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
                 .timeout(10000);
-        Document document = null;
+        Document document;
         try {
             document = conn.get();
         } catch (IOException e) {

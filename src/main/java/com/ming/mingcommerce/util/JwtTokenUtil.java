@@ -71,7 +71,7 @@ public class JwtTokenUtil {
         DecodedJWT decodedJWT = verifier.verify(token);
         String email = decodedJWT.getClaim("email").asString();
         String role = decodedJWT.getClaim("role").asString();
-
+        log.info("current user: '{}'", email);
         return new CurrentUser(email, role);
     }
 

@@ -16,8 +16,7 @@ public class ProductController {
 
     @GetMapping("/api/product-crawl")
     public ResponseEntity<?> crawl() throws IOException {
-        productCrawl.crawl();
-        Map<String, String> result = Map.of("message", "product successfully inserted");
+        Map<String, String> result = productCrawl.crawl();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

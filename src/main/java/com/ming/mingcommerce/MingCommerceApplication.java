@@ -6,6 +6,7 @@ import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.product.ProductCrawl;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,16 +20,21 @@ public class MingCommerceApplication {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Value("${admin.email}")
+    private String email;
+
+    @Value("${admin.password}")
+    private String password;
+
     public static void main(String[] args) {
         SpringApplication.run(MingCommerceApplication.class, args);
     }
 
     @PostConstruct
     void adminSave() {
-        String password = "1234";
         Member admin = Member.builder()
                 .memberName("admin")
-                .email("admin@ming.com")
+                .email(email)
                 .role(Role.ADMIN)
                 .password(passwordEncoder.encode(password))
                 .build();
