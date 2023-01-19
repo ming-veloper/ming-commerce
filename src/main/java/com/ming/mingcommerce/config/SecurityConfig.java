@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,6 +27,8 @@ public class SecurityConfig {
 
     private final MemberRepository memberRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    private final LoginSuccessHandler loginSuccessHandler;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,10 +44,12 @@ public class SecurityConfig {
                 )
                 .csrf().disable()
                 .formLogin().disable();
+        // 커스텀 인증 필터 적용
+        CustomAuthenticationProvider customAuthenticationProvider = new CustomAuthenticationProvider(userDetailsService(), passwordEncoder());
 
         // 커스텀 로그인 필터 적용
-        LoginFilter loginFilter = new LoginFilter(authenticationManager(http));
-        loginFilter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtTokenUtil));
+        LoginFilter loginFilter = new LoginFilter(customAuthenticationProvider);
+        loginFilter.setAuthenticationSuccessHandler(loginSuccessHandler);
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         // 커스텀 인가 필터 적용
@@ -67,12 +69,4 @@ public class SecurityConfig {
     }
 
 
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder
-                .authenticationProvider(new CustomAuthenticationProvider(userDetailsService(), passwordEncoder()));
-
-        return authenticationManagerBuilder.build();
-    }
 }

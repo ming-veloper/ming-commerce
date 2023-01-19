@@ -6,7 +6,8 @@ import com.ming.mingcommerce.member.model.LoginRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -27,14 +28,10 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     @Value("${admin.email}")
     private String adminEmail;
 
-    public LoginFilter(AuthenticationManager authenticationManager) {
-        super("/api/login", authenticationManager);
+    public LoginFilter(AuthenticationProvider authenticationProvider) {
+        super("/api/login");
+        super.setAuthenticationManager(new ProviderManager(authenticationProvider));
     }
-
-    protected AuthenticationManager getAuthenticationManager() {
-        return super.getAuthenticationManager();
-    }
-
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
@@ -53,6 +50,6 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Role role) {
-        return Set.of((GrantedAuthority) () -> "ROLE_" + role.name());
+        return Set.of((GrantedAuthority) role::name);
     }
 }

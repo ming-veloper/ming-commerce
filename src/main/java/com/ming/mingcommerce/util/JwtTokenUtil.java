@@ -23,6 +23,8 @@ public class JwtTokenUtil {
 
     @Value("${jwt.secret-key}")
     private String jwtSecretKey;
+    @Value(("${admin.email}"))
+    private String adminEmail;
 
     /**
      * 사용자 고유 식별이 이메일이 담긴 액세스 토큰과 리프레시 토큰을 생성한다.
@@ -31,10 +33,13 @@ public class JwtTokenUtil {
      * @return access token, refresh token
      */
 
-    public JwtTokenModel issueToken(String email, String role) {
+    public JwtTokenModel issueToken(String email) {
 
         long now = System.currentTimeMillis();
-
+        String role = "USER";
+        if (email.contentEquals(adminEmail)) {
+            role = "ADMIN";
+        }
         Algorithm algorithm = Algorithm.HMAC512(jwtSecretKey);
         String accessToken = JWT.create()
                 .withIssuedAt(new Date(now))

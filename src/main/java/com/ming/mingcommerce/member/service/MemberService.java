@@ -42,7 +42,7 @@ public class MemberService {
         memberRepository.save(member);
 
         // issue token
-        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(email, "USER");
+        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(email);
 
         return new RegisterResponse(tokenModel.getAccessToken(), tokenModel.getRefreshToken());
     }

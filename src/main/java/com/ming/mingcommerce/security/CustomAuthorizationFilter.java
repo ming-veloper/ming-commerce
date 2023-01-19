@@ -27,16 +27,16 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         String header = request.getHeader("X-WWW-MING-AUTHORIZATION");
 
         if (StringUtils.hasText(header)) {
-        CurrentUser currentUser = jwtTokenUtil.verifyToken(header.replace("Bearer ", ""));
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser, "", getAuthorities(currentUser.getRole()));
+            CurrentUser currentUser = jwtTokenUtil.verifyToken(header.replace("Bearer ", ""));
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser, "", getAuthorities(currentUser.getRole()));
 
-        SecurityContextHolder.getContext().setAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(token);
         }
 
         filterChain.doFilter(request, response);
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(String role) {
-        return Set.of((GrantedAuthority) () -> role);
+        return Set.of((GrantedAuthority) () -> "ROLE_" + role);
     }
 }
