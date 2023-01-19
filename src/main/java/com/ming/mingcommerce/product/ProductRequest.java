@@ -15,7 +15,7 @@ public class ProductRequest {
     private String productName;
 
     private String thumbnailImageUrl;
-    private Float price;
+    private Double price;
 
     private String description;
     private List<String> productImageUrl;
