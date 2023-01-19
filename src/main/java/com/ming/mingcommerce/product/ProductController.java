@@ -12,11 +12,11 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class ProductController {
-    private final ProductCrawl productCrawl;
+    private final ProductCrawlService productCrawlService;
 
     @GetMapping("/api/product-crawl")
     public ResponseEntity<?> crawl() throws IOException {
-        Map<String, String> result = productCrawl.crawl();
+        Map<String, String> result = productCrawlService.crawl();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

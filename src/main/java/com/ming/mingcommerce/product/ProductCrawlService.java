@@ -14,7 +14,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@Component
+@Service
 @Slf4j
-public class ProductCrawl {
+public class ProductCrawlService {
     private final CategoryRepository categoryRepository;
 
     private final ProductRepository productRepository;

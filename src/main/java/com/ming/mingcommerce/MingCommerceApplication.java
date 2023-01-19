@@ -3,7 +3,6 @@ package com.ming.mingcommerce;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.member.entity.Role;
 import com.ming.mingcommerce.member.repository.MemberRepository;
-import com.ming.mingcommerce.product.ProductCrawl;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,8 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class MingCommerceApplication {
-    @Autowired
-    ProductCrawl productCrawl;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
