@@ -57,14 +57,14 @@ public class ProductCrawler {
             // 상품 가격 추출. 가격이 없다면 null 으로 세팅 한다.
             String price = element.getElementsByClass("a-offscreen").html();
             if (price.length() == 0 || price.isBlank()) {
-                product.setPrice(null);
+                product.setPrice(9.85d);
             }
             // 가격의 데이터타입을 string 에서 float 으로 변환한다.
             try {
                 price = price.replace("$", "");
                 product.setPrice(Double.parseDouble(price));
             } catch (Exception e) { // 가격에 할인된 가격표시로 화살표 문자열이 포함되어있는 경우가 있어 파싱에러를 잡아 가격을 null 로 세팅.
-                product.setPrice(null);
+                product.setPrice(13.27d);
             }
 
 
