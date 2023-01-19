@@ -32,3 +32,12 @@ operation::check-email-duplication[]
 === 로그인
 
 operation::login[]
+
+== Product
+
+=== 상품 데이터 삽입
+
+amazom.com 의 grocery 카테고리의 상품을 크롤링하여 DB 에 삽입한다.
+
+operation::insert-product[]
+
