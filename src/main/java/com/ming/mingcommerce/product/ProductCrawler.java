@@ -22,7 +22,7 @@ import java.util.List;
 public class ProductCrawler {
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
-    
+
 
     public List<Product> getProducts() throws IOException {
         String url = "https://www.amazon.com/s?k=food&i=grocery&rh=n%3A16310101%2Cn%3A16310231&dc&ds=v1%3AK6elEP%2FxWS5G08aQFEAGWinE3FGmr5b9KnvuAMfes%2BI&crid=16I887VJBBHI1&qid=1673512801&rnid=16310101&sprefix=fo%2Caps%2C300&ref=sr_nr_n_3";
@@ -54,13 +54,19 @@ public class ProductCrawler {
             String thumbnailLink = element.getElementsByClass("s-image").attr("src");
             product.setThumbnailImageUrl(thumbnailLink);
 
-            // 상품 가격 추출. 가격이 없다면 "undefined" 으로 세팅 한다.
+            // 상품 가격 추출. 가격이 없다면 null 으로 세팅 한다.
             String price = element.getElementsByClass("a-offscreen").html();
             if (price.length() == 0 || price.isBlank()) {
-                product.setPrice("undefined");
-            } else {
-                product.setPrice(price);
+                product.setPrice(null);
             }
+            // 가격의 데이터타입을 string 에서 float 으로 변환한다.
+            try {
+                price = price.replace("$", "");
+                product.setPrice(Float.parseFloat(price));
+            } catch (Exception e) { // 가격에 할인된 가격표시로 화살표 문자열이 포함되어있는 경우가 있어 파싱에러를 잡아 가격을 null 로 세팅.
+                product.setPrice(null);
+            }
+
 
             // 상품 카테고리 설정
             product.setCategory(category);
