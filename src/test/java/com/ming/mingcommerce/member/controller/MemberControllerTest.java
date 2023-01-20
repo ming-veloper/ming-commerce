@@ -3,6 +3,7 @@ package com.ming.mingcommerce.member.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ming.mingcommerce.member.model.LoginRequest;
 import com.ming.mingcommerce.member.model.RegisterRequest;
+import com.ming.mingcommerce.member.model.RegisterResponse;
 import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.member.service.MemberService;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -167,14 +170,33 @@ class MemberControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
+    @Test
+    @DisplayName("jwt 토큰을 이용하여 멤버 정보를 반환한다")
+    void memberInfo() throws Exception {
+        RegisterResponse response = createTestMember("test@gmail.com", "tester369!");
+        mockMvc.perform(get("/api/members/info").header("X-WWW-MING-AUTHORIZATION", response.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("result").exists())
+                .andDo(document("get-member-info",
+                        requestHeaders(
+                                headerWithName("X-WWW-MING-AUTHORIZATION").description("jwt 토큰 형식의 밍커머스 인증헤더")
+                        ),
+                        responseFields(
+                                fieldWithPath("result.email").description("멤버의 이메일"),
+                                fieldWithPath("result.memberName").description("멤버의 이름")
+                        )
+                ))
+        ;
+    }
 
-    private void createTestMember(String email, String password) {
+
+    private RegisterResponse createTestMember(String email, String password) {
         RegisterRequest registerRequest = RegisterRequest.builder()
                 .email(email)
                 .password(password)
                 .memberName("tester")
                 .build();
 
-        memberService.register(registerRequest);
+        return memberService.register(registerRequest);
     }
 }
