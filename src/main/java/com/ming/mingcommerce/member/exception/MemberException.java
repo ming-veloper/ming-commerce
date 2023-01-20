@@ -28,4 +28,10 @@ public class MemberException extends RuntimeException {
             super(message);
         }
     }
+
+    public static class MemberEmailNotFoundException extends MemberException {
+        public MemberEmailNotFoundException(String message) {
+            super(message);
+        }
+    }
 }
