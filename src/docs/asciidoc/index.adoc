@@ -33,6 +33,10 @@ operation::check-email-duplication[]
 
 operation::login[]
 
+=== 멤버 정보 반환
+
+operation::get-member-info[]
+
 == Product
 
 === 상품 데이터 삽입
