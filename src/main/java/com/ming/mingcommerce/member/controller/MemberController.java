@@ -1,16 +1,12 @@
 package com.ming.mingcommerce.member.controller;
 
-import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.member.exception.MemberException;
 import com.ming.mingcommerce.member.model.MemberModel;
 import com.ming.mingcommerce.member.model.RegisterRequest;
 import com.ming.mingcommerce.member.model.RegisterResponse;
-import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.member.service.MemberService;
-import com.ming.mingcommerce.security.CurrentUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,8 +21,6 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
-    private final ModelMapper modelMapper;
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> registerMember(@Valid @RequestBody RegisterRequest registerRequest,
@@ -46,13 +40,8 @@ public class MemberController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<?> getUserInfo(Authentication authentication) {
-        CurrentUser currentUser = (CurrentUser) authentication.getPrincipal();
-        String email = currentUser.getEmail();
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException.MemberEmailNotFoundException("Email cannot found: " + email));
-        MemberModel memberModel = modelMapper.map(member, MemberModel.class);
-
+    public ResponseEntity<?> getMemberInfo(Authentication authentication) {
+        MemberModel memberModel = memberService.getMemberInfo(authentication);
         return new ResponseEntity<>(Map.of("result", memberModel), HttpStatus.OK);
     }
 }
