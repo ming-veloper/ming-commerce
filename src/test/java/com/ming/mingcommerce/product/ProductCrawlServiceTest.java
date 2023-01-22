@@ -1,6 +1,7 @@
 package com.ming.mingcommerce.product;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ming.mingcommerce.product.service.ProductCrawlService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

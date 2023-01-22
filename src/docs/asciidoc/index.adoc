@@ -45,3 +45,9 @@ amazom.com 의 grocery 카테고리의 상품을 크롤링하여 DB 에 삽입�
 
 operation::insert-product[]
 
+=== 상품 데이터 조회하기
+
+카테고리이름과 페이지를 queryParam 으로 해서 해당 카테고리에 속한 상품을 10개씩 조회한다. 0 페이지부터 시작한다.
+
+operation::get-products[]
+
