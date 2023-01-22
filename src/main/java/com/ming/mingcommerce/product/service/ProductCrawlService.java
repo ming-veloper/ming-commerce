@@ -1,5 +1,6 @@
-package com.ming.mingcommerce.product;
+package com.ming.mingcommerce.product.service;
 
+import com.ming.mingcommerce.product.ProductCrawler;
 import com.ming.mingcommerce.product.entity.Product;
 import com.ming.mingcommerce.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
