@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 public class ProductModel {
     private String uuid;
-    private String description;
     private String productName;
     private Double price;
     private String thumbnailImageUrl;
