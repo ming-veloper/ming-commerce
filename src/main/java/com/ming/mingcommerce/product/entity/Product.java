@@ -1,5 +1,6 @@
 package com.ming.mingcommerce.product.entity;
 
+import com.ming.mingcommerce.config.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product {
+public class Product extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
