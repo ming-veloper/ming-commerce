@@ -38,10 +38,10 @@ class ProductTest {
 
         Product savedProduct = productRepository.save(product);
         // 카테고리 생성 확인
-        assertThat(savedCategory.getProductCategoryId()).isNotNull();
+        assertThat(savedCategory.getCategoryId()).isNotNull();
 
         // 상품 생성 확인
-        assertThat(savedProduct.getUuid()).isNotNull();
+        assertThat(savedProduct.getProductId()).isNotNull();
         assertThat(savedProduct.getProductName()).isEqualTo(productName);
         assertThat(savedProduct.getProductImageUrl().size()).isEqualTo(2);
     }

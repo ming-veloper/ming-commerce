@@ -17,7 +17,7 @@ import java.util.List;
 public class Product extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String uuid;
+    private String productId;
     @Column(nullable = false)
     private String productName;
 
