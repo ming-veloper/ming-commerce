@@ -11,11 +11,13 @@ import com.ming.mingcommerce.security.CurrentUser;
 import com.ming.mingcommerce.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -28,6 +30,9 @@ public class MemberService {
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${admin.email}")
+    private String adminEmail;
 
     @Transactional
     public RegisterResponse register(RegisterRequest registerRequest) {
@@ -42,12 +47,23 @@ public class MemberService {
 
         // save member
         Member member = modelMapper.map(registerRequest, Member.class);
-        memberRepository.save(member);
+        // 권한 설정
+        setRole(email, member);
+
+        // 멤버 저장
+        memberRepository.saveAndFlush(member);
 
         // issue token
-        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(email);
+        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(member);
+
 
         return new RegisterResponse(tokenModel.getAccessToken(), tokenModel.getRefreshToken());
+    }
+
+    private void setRole(String email, Member member) {
+        if (Objects.equals(email, adminEmail)) {
+            member.setAdminRole();
+        }
     }
 
     /**

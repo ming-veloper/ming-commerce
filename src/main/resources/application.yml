@@ -8,7 +8,9 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: validate
-
+    properties:
+      hibernate:
+        format_sql: true
 
 jwt:
   access-token-duration: 604800000 # valid 1 Week

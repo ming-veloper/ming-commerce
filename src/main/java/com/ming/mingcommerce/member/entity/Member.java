@@ -1,6 +1,5 @@
 package com.ming.mingcommerce.member.entity;
 
-import com.ming.mingcommerce.cart.entity.Cart;
 import com.ming.mingcommerce.config.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,15 +22,8 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
-    @OneToOne
-    private Cart cart;
-
     public void setAdminRole() {
         this.role = Role.ADMIN;
-    }
-
-    public Cart createCart() {
-        return this.cart = new Cart();
     }
 
 }

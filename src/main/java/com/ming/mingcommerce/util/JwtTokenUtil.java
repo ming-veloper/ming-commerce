@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.member.model.JwtTokenModel;
 import com.ming.mingcommerce.security.CurrentUser;
 import lombok.extern.slf4j.Slf4j;
@@ -29,29 +30,31 @@ public class JwtTokenUtil {
     /**
      * 사용자 고유 식별이 이메일이 담긴 액세스 토큰과 리프레시 토큰을 생성한다.
      *
-     * @param email 이메일
+     * @param member
      * @return access token, refresh token
      */
 
-    public JwtTokenModel issueToken(String email) {
+    public JwtTokenModel issueToken(Member member) {
 
         long now = System.currentTimeMillis();
         String role = "USER";
-        if (email.contentEquals(adminEmail)) {
+        if (member.getEmail().contentEquals(adminEmail)) {
             role = "ADMIN";
         }
         Algorithm algorithm = Algorithm.HMAC512(jwtSecretKey);
         String accessToken = JWT.create()
                 .withIssuedAt(new Date(now))
                 .withExpiresAt(new Date(now + accessTokenDuration))
-                .withClaim("email", email)
+                .withClaim("email", member.getEmail())
+                .withClaim("uuid", member.getUuid())
                 .withClaim("role", role)
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
                 .withIssuedAt(new Date(now))
                 .withExpiresAt(new Date(now + refreshTokenDuration))
-                .withClaim("email", email)
+                .withClaim("email", member.getEmail())
+                .withClaim("uuid", member.getUuid())
                 .withClaim("role", role)
                 .sign(algorithm);
 
@@ -74,10 +77,13 @@ public class JwtTokenUtil {
                 .build();
 
         DecodedJWT decodedJWT = verifier.verify(token);
+
         String email = decodedJWT.getClaim("email").asString();
         String role = decodedJWT.getClaim("role").asString();
+        String uuid = decodedJWT.getClaim("uuid").asString();
+
         log.info("current user: '{}'", email);
-        return new CurrentUser(email, role);
+        return new CurrentUser(uuid, email, role);
     }
 
 

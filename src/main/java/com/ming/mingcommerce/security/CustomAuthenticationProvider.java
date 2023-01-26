@@ -1,13 +1,15 @@
 package com.ming.mingcommerce.security;
 
+import com.ming.mingcommerce.member.entity.Member;
+import com.ming.mingcommerce.member.exception.MemberException;
+import com.ming.mingcommerce.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -15,22 +17,24 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    private final UserDetailsService userDetailsService;
+    private final MemberRepository memberRepository;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
         String password = authentication.getCredentials().toString();
+        Member member = memberRepository.findByEmail(authentication.getName()).orElseThrow(() -> new MemberException.MemberEmailNotFoundException("email not found"));
 
-        UserDetails member = userDetailsService.loadUserByUsername(email);
+        // SecurityContext 에 담길 인증 객체
+        CurrentUser currentUser = modelMapper.map(member, CurrentUser.class);
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new BadCredentialsException("bad credentials!");
         }
 
-        return new UsernamePasswordAuthenticationToken(email, password, authentication.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(currentUser, password, authentication.getAuthorities());
 
     }
 

@@ -4,7 +4,6 @@ import com.ming.mingcommerce.filter.LoginFilter;
 import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.security.CustomAuthenticationProvider;
 import com.ming.mingcommerce.security.CustomAuthorizationFilter;
-import com.ming.mingcommerce.security.CustomUserDetailsService;
 import com.ming.mingcommerce.security.LoginSuccessHandler;
 import com.ming.mingcommerce.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -46,7 +44,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .formLogin().disable();
         // 커스텀 인증 필터 적용
-        CustomAuthenticationProvider customAuthenticationProvider = new CustomAuthenticationProvider(userDetailsService(), passwordEncoder());
+        CustomAuthenticationProvider customAuthenticationProvider = new CustomAuthenticationProvider(memberRepository, passwordEncoder());
 
         // 커스텀 로그인 필터 적용
         LoginFilter loginFilter = new LoginFilter(customAuthenticationProvider);
@@ -63,11 +61,5 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-    UserDetailsService userDetailsService() {
-        return new CustomUserDetailsService(memberRepository);
-    }
-
 
 }

@@ -2,6 +2,8 @@ package com.ming.mingcommerce.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.ming.mingcommerce.member.entity.Member;
+import com.ming.mingcommerce.member.entity.Role;
 import com.ming.mingcommerce.member.model.JwtTokenModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,8 +44,12 @@ class JwtTokenUtilTest {
     @Test
     @DisplayName("액세스 토큰과 리프레시 토큰을 생성한다")
     void issueToken() {
-        String email = "tester@gmail.com";
-        JwtTokenModel tokenModel = jwtTokenService.issueToken(email);
+        Member member = Member.builder()
+                .email("tester@ming.com")
+                .uuid(UUID.randomUUID().toString())
+                .role(Role.USER).build();
+
+        JwtTokenModel tokenModel = jwtTokenService.issueToken(member);
         assertThat(tokenModel).hasFieldOrProperty("refreshToken");
         assertThat(tokenModel).hasFieldOrProperty("accessToken");
 

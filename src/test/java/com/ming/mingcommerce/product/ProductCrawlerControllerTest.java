@@ -1,6 +1,8 @@
 package com.ming.mingcommerce.product;
 
 import com.ming.mingcommerce.BaseControllerTest;
+import com.ming.mingcommerce.member.entity.Member;
+import com.ming.mingcommerce.member.entity.Role;
 import com.ming.mingcommerce.product.entity.Category;
 import com.ming.mingcommerce.product.entity.CategoryName;
 import com.ming.mingcommerce.product.entity.Product;
@@ -20,6 +22,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -74,7 +77,12 @@ class ProductCrawlerControllerTest extends BaseControllerTest {
     @DisplayName("상품 데이터를 크롤링하여 DB 에 삽입하는 테스트")
     @WithMockUser(authorities = "ROLE_ADMIN")
     void productCrawling_Role_ADMIN() throws Exception {
-        String adminToken = jwtTokenUtil.issueToken(adminEmail).getAccessToken();
+        Member member = Member.builder()
+                .email(adminEmail)
+                .uuid(UUID.randomUUID().toString())
+                .role(Role.ADMIN).build();
+
+        String adminToken = jwtTokenUtil.issueToken(member).getAccessToken();
         mockMvc.perform(get("/api/product-crawl").header("X-WWW-MING-AUTHORIZATION", adminToken))
                 .andExpect(status().isOk())
                 .andDo(document("insert-product",
