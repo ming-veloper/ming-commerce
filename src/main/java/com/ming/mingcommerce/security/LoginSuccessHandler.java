@@ -24,8 +24,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        CurrentUser currentUser = (CurrentUser) authentication.getPrincipal();
-        Member member = modelMapper.map(currentUser, Member.class);
+        CurrentMember currentMember = (CurrentMember) authentication.getPrincipal();
+        Member member = modelMapper.map(currentMember, Member.class);
 
         JwtTokenModel tokenModel = jwtTokenUtil.issueToken(member);
         String result = objectMapper.writeValueAsString(tokenModel);

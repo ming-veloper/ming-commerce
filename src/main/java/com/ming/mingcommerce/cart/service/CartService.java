@@ -1,20 +1,19 @@
 package com.ming.mingcommerce.cart.service;
 
 import com.ming.mingcommerce.cart.entity.Cart;
+import com.ming.mingcommerce.cart.model.CartProductRequest;
 import com.ming.mingcommerce.cart.repository.CartRepository;
 import com.ming.mingcommerce.cart.vo.CartLine;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.product.entity.Product;
-import com.ming.mingcommerce.product.repository.CategoryRepository;
 import com.ming.mingcommerce.product.repository.ProductRepository;
-import com.ming.mingcommerce.security.CurrentUser;
+import com.ming.mingcommerce.security.CurrentMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -30,20 +29,22 @@ public class CartService {
     /**
      * 장바구니에 상품을 추가한다.
      *
-     * @param currentUser
-     * @param quantity
-     * @param productId
+     * @param currentMember 현재 컨텍스트에서 인증된 유저
+     * @param request       장바구니에 담을 productId 와 quantity
      */
     @Transactional
-    public void addProduct(CurrentUser currentUser, Long quantity, String productId) {
+    public void addProduct(CurrentMember currentMember, CartProductRequest request) {
 
-        Cart cart = cartRepository.findByMember(currentUser);
+        Cart cart = cartRepository.findByMember(currentMember);
         // 처음 카트에 담는 멤버라면, 멤버 세팅
         if (cart.getMember() == null) {
-            Member member = memberRepository.findMemberByEmail(currentUser.getEmail());
+            Member member = memberRepository.findMemberByEmail(currentMember.getEmail());
             cart.setMember(member);
         }
         // 존재하는 상품인지 검증
+        String productId = request.getProductId();
+        Long quantity = request.getQuantity();
+
         Product product = productRepository.findProductById(productId);
 
         // 장바구니에 해당 상품이 이미 담겨있는지 알아보기 위한 predicate
@@ -56,14 +57,7 @@ public class CartService {
                 .findFirst()
                 .ifPresentOrElse((cartLine) -> cartLine.plusQuantity(quantity),
                         () -> {
-                            CartLine cartLine = CartLine.builder()
-                                    .productId(productId)
-                                    .price(product.getPrice())
-                                    .quantity(quantity)
-                                    .createdDate(LocalDateTime.now())
-                                    .modifiedDate(LocalDateTime.now())
-                                    .build();
-
+                            CartLine cartLine = CartLine.createCartLine(product, quantity);
                             cart.getProductList().add(cartLine);
                         });
 

@@ -31,7 +31,8 @@ public class ProductControllerTest extends BaseControllerTest {
         Category category = new Category(CategoryName.DAIRY_EGGS);
         categoryRepository.save(category);
 
-        for (int i = 1; i < 20; i++) {
+        // 상품 20 개 저장
+        for (int i = 0; i < 20; i++) {
             Product product = Product.builder()
                     .category(category)
                     .productName("신선 달걀 " + i + "구")

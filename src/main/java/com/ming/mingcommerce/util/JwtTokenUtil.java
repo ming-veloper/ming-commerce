@@ -6,7 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.member.model.JwtTokenModel;
-import com.ming.mingcommerce.security.CurrentUser;
+import com.ming.mingcommerce.security.CurrentMember;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -70,7 +70,7 @@ public class JwtTokenUtil {
      * @param token jwt 토큰
      * @return 유저의 이메일
      */
-    public CurrentUser verifyToken(String token) {
+    public CurrentMember verifyToken(String token) {
 
         Algorithm algorithm = Algorithm.HMAC512(jwtSecretKey);
         JWTVerifier verifier = JWT.require(algorithm)
@@ -83,7 +83,7 @@ public class JwtTokenUtil {
         String uuid = decodedJWT.getClaim("uuid").asString();
 
         log.info("current user: '{}'", email);
-        return new CurrentUser(uuid, email, role);
+        return new CurrentMember(uuid, email, role);
     }
 
 

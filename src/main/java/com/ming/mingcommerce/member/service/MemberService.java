@@ -7,7 +7,7 @@ import com.ming.mingcommerce.member.model.MemberModel;
 import com.ming.mingcommerce.member.model.RegisterRequest;
 import com.ming.mingcommerce.member.model.RegisterResponse;
 import com.ming.mingcommerce.member.repository.MemberRepository;
-import com.ming.mingcommerce.security.CurrentUser;
+import com.ming.mingcommerce.security.CurrentMember;
 import com.ming.mingcommerce.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -78,11 +78,11 @@ public class MemberService {
     }
 
     public MemberModel getMemberInfo(Authentication authentication) {
-        if (!(authentication.getPrincipal() instanceof CurrentUser currentUser)) {
+        if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
 
-        String email = currentUser.getEmail();
+        String email = currentMember.getEmail();
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException.MemberEmailNotFoundException("Email cannot found: " + email));
         return modelMapper.map(member, MemberModel.class);

@@ -1,5 +1,6 @@
 package com.ming.mingcommerce.cart.vo;
 
+import com.ming.mingcommerce.product.entity.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -25,11 +26,17 @@ public class CartLine {
 
     private LocalDateTime modifiedDate;
 
+    public static CartLine createCartLine(Product product, Long quantity) {
+        return CartLine.builder()
+                .productId(product.getProductId())
+                .price(product.getPrice())
+                .quantity(quantity)
+                .createdDate(LocalDateTime.now())
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
     public void plusQuantity(Long quantity) {
-        if (quantity > 1) {
-            this.quantity += quantity;
-            return;
-        }
-        this.quantity += 1;
+        this.quantity += quantity;
     }
 }

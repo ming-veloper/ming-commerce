@@ -27,8 +27,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         String header = request.getHeader("X-WWW-MING-AUTHORIZATION");
 
         if (StringUtils.hasText(header)) {
-            CurrentUser currentUser = jwtTokenUtil.verifyToken(header.replace("Bearer ", ""));
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentUser, "", getAuthorities(currentUser.getRole()));
+            CurrentMember currentMember = jwtTokenUtil.verifyToken(header.replace("Bearer ", ""));
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(currentMember, "", getAuthorities(currentMember.getRole()));
 
             SecurityContextHolder.getContext().setAuthentication(token);
         }

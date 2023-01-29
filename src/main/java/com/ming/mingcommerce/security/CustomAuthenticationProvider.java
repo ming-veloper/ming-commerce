@@ -28,13 +28,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         Member member = memberRepository.findByEmail(authentication.getName()).orElseThrow(() -> new MemberException.MemberEmailNotFoundException("email not found"));
 
         // SecurityContext 에 담길 인증 객체
-        CurrentUser currentUser = modelMapper.map(member, CurrentUser.class);
+        CurrentMember currentMember = modelMapper.map(member, CurrentMember.class);
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new BadCredentialsException("bad credentials!");
         }
 
-        return new UsernamePasswordAuthenticationToken(currentUser, password, authentication.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(currentMember, password, authentication.getAuthorities());
 
     }
 
