@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProductModel {
-    private String uuid;
+    private String productId;
     private String productName;
     private Double price;
     private String thumbnailImageUrl;
