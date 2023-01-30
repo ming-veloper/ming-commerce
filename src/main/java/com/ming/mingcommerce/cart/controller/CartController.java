@@ -33,6 +33,6 @@ public class CartController {
             throw new IllegalArgumentException();
         }
         int cartLineNumber = cartService.addProduct(currentMember, request);
-        return new ResponseEntity<>(Map.of("cartLineNumber", cartLineNumber), HttpStatus.OK);
+        return new ResponseEntity<>(Map.of("cartLineCount", cartLineNumber), HttpStatus.OK);
     }
 }

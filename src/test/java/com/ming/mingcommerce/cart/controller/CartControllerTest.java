@@ -63,7 +63,7 @@ class CartControllerTest extends BaseControllerTest {
                         .content(data))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("cartLineNumber").exists())
+                .andExpect(jsonPath("cartLineCount").exists())
                 .andDo(document("add-product-to-cart",
                         requestHeaders(
                                 headerWithName("X-WWW-MING-AUTHORIZATION").description("액세스 토큰")
@@ -73,7 +73,7 @@ class CartControllerTest extends BaseControllerTest {
                                 fieldWithPath("quantity").description("상품 수량")
                         ),
                         responseFields(
-                                fieldWithPath("cartLineNumber").description("장바구니에 담긴 상품의 수")
+                                fieldWithPath("cartLineCount").description("장바구니에 담긴 상품의 수")
                         )
                         )
                 );
