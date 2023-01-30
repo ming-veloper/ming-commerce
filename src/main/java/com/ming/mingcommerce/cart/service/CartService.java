@@ -31,10 +31,11 @@ public class CartService {
      *
      * @param currentMember 현재 컨텍스트에서 인증된 유저
      * @param request       장바구니에 담을 productId 와 quantity
+     *
+     * @return 장바구니 상품의 개수
      */
     @Transactional
-    public void addProduct(CurrentMember currentMember, CartProductRequest request) {
-
+    public int addProduct(CurrentMember currentMember, CartProductRequest request) {
         Cart cart = cartRepository.findByMember(currentMember);
         // 처음 카트에 담는 멤버라면, 멤버 세팅
         if (cart.getMember() == null) {
@@ -61,6 +62,8 @@ public class CartService {
                             cart.getProductList().add(cartLine);
                         });
 
-        cartRepository.saveAndFlush(cart);
+        Cart savedCart = cartRepository.saveAndFlush(cart);
+
+        return savedCart.getProductList().size();
     }
 }

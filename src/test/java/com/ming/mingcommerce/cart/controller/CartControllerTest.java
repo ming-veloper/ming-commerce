@@ -22,9 +22,9 @@ import org.springframework.http.MediaType;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -63,13 +63,19 @@ class CartControllerTest extends BaseControllerTest {
                         .content(data))
 
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("cartLineCount").exists())
                 .andDo(document("add-product-to-cart",
                         requestHeaders(
-                                headerWithName("X-WWW-MING-AUTHORIZATION").description("액세스 토큰")),
+                                headerWithName("X-WWW-MING-AUTHORIZATION").description("액세스 토큰")
+                        ),
                         requestFields(
                                 fieldWithPath("productId").description("상품 고유 id"),
                                 fieldWithPath("quantity").description("상품 수량")
-                        ))
+                        ),
+                        responseFields(
+                                fieldWithPath("cartLineCount").description("장바구니에 담긴 상품의 수")
+                        )
+                        )
                 );
     }
 
