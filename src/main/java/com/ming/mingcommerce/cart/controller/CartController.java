@@ -4,12 +4,15 @@ import com.ming.mingcommerce.cart.model.CartProductRequest;
 import com.ming.mingcommerce.cart.service.CartService;
 import com.ming.mingcommerce.security.CurrentMember;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +32,7 @@ public class CartController {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        cartService.addProduct(currentMember, request);
-        return ResponseEntity.ok().build();
+        int cartLineNumber = cartService.addProduct(currentMember, request);
+        return new ResponseEntity<>(Map.of("cartLineNumber", cartLineNumber), HttpStatus.OK);
     }
 }
