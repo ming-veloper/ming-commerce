@@ -75,11 +75,15 @@ public class CartService {
         Long updateQuantity = update.getQuantity();
         // 장바구니에서 수량 업데이트를 하고자하는 카트 상품을 찾는다
         Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
-        cart.getProductList()
+
+        CartLine cartLine = cart.getProductList()
                 .stream()
                 .filter(predicate)
                 .findFirst()
-                .ifPresentOrElse((cartLine -> cartLine.updateQuantity(updateQuantity)), IllegalArgumentException::new);
+                .orElseThrow(IllegalArgumentException::new);
+        // 수량 업데이트
+        cartLine.updateQuantity(updateQuantity);
+
         Cart savedCart = cartRepository.saveAndFlush(cart);
 
         return savedCart.getProductList().size();
