@@ -20,6 +20,7 @@ public class CartLine {
     private String productId;
     private Double price;
     private Long quantity;
+    private boolean deleted;
 
     @Column(updatable = false)
     private LocalDateTime createdDate;
@@ -42,5 +43,9 @@ public class CartLine {
 
     public void updateQuantity(Long quantity) {
         this.quantity = quantity;
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 }

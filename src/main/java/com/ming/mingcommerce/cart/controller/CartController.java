@@ -1,5 +1,6 @@
 package com.ming.mingcommerce.cart.controller;
 
+import com.ming.mingcommerce.cart.model.CartProductDeleteRequest;
 import com.ming.mingcommerce.cart.model.CartProductQuantityUpdate;
 import com.ming.mingcommerce.cart.model.CartProductRequest;
 import com.ming.mingcommerce.cart.service.CartService;
@@ -47,6 +48,20 @@ public class CartController {
             throw new IllegalArgumentException();
         }
         int cartLineCount = cartService.updateQuantity(currentMember, update);
+
+        return new ResponseEntity<>(Map.of("cartLineCount", cartLineCount), HttpStatus.OK);
+    }
+
+    /**
+     * 장바구니에 담긴 상품을 삭제한다
+     */
+    @DeleteMapping
+    public ResponseEntity<?> deleteProduct(Authentication authentication,
+                                           @RequestBody CartProductDeleteRequest deleteRequest) {
+        if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
+            throw new IllegalArgumentException();
+        }
+        int cartLineCount = cartService.deleteProduct(currentMember, deleteRequest);
 
         return new ResponseEntity<>(Map.of("cartLineCount", cartLineCount), HttpStatus.OK);
     }

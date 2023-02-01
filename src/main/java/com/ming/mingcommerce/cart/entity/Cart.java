@@ -27,7 +27,7 @@ public class Cart extends BaseTimeEntity {
     @OrderColumn(name = "cart_line_idx")
     private List<CartLine> productList = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     private Member member;
 
     public void setMember(Member member) {
