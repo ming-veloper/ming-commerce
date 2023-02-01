@@ -1,5 +1,6 @@
 package com.ming.mingcommerce.cart.controller;
 
+import com.ming.mingcommerce.cart.model.CartProductQuantityUpdate;
 import com.ming.mingcommerce.cart.model.CartProductRequest;
 import com.ming.mingcommerce.cart.service.CartService;
 import com.ming.mingcommerce.security.CurrentMember;
@@ -7,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -32,7 +30,24 @@ public class CartController {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        int cartLineNumber = cartService.addProduct(currentMember, request);
-        return new ResponseEntity<>(Map.of("cartLineCount", cartLineNumber), HttpStatus.OK);
+        int cartLineCount = cartService.addProduct(currentMember, request);
+        return new ResponseEntity<>(Map.of("cartLineCount", cartLineCount), HttpStatus.OK);
+    }
+
+    /**
+     * 장바구니에 담긴 상품의 수량(quantity)를 수정한다.
+     *
+     * @param authentication
+     * @param update         상품 고유 ID 와 업데이트할 수량
+     */
+    @PutMapping
+    public ResponseEntity<?> updateProductQuantity(Authentication authentication,
+                                                   @RequestBody CartProductQuantityUpdate update) {
+        if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
+            throw new IllegalArgumentException();
+        }
+        int cartLineCount = cartService.updateQuantity(currentMember, update);
+
+        return new ResponseEntity<>(Map.of("cartLineCount", cartLineCount), HttpStatus.OK);
     }
 }

@@ -39,4 +39,8 @@ public class CartLine {
     public void plusQuantity(Long quantity) {
         this.quantity += quantity;
     }
+
+    public void updateQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
 }

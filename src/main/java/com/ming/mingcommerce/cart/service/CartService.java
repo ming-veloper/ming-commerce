@@ -1,6 +1,7 @@
 package com.ming.mingcommerce.cart.service;
 
 import com.ming.mingcommerce.cart.entity.Cart;
+import com.ming.mingcommerce.cart.model.CartProductQuantityUpdate;
 import com.ming.mingcommerce.cart.model.CartProductRequest;
 import com.ming.mingcommerce.cart.repository.CartRepository;
 import com.ming.mingcommerce.cart.vo.CartLine;
@@ -31,7 +32,6 @@ public class CartService {
      *
      * @param currentMember 현재 컨텍스트에서 인증된 유저
      * @param request       장바구니에 담을 productId 와 quantity
-     *
      * @return 장바구니 상품의 개수
      */
     @Transactional
@@ -61,6 +61,28 @@ public class CartService {
                             CartLine cartLine = CartLine.createCartLine(product, quantity);
                             cart.getProductList().add(cartLine);
                         });
+
+        Cart savedCart = cartRepository.saveAndFlush(cart);
+
+        return savedCart.getProductList().size();
+    }
+
+    @Transactional
+    public int updateQuantity(CurrentMember currentMember, CartProductQuantityUpdate update) {
+        Cart cart = cartRepository.findByMember(currentMember);
+
+        String productId = update.getProductId();
+        Long updateQuantity = update.getQuantity();
+        // 장바구니에서 수량 업데이트를 하고자하는 카트 상품을 찾는다
+        Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
+
+        CartLine cartLine = cart.getProductList()
+                .stream()
+                .filter(predicate)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+        // 수량 업데이트
+        cartLine.updateQuantity(updateQuantity);
 
         Cart savedCart = cartRepository.saveAndFlush(cart);
 
