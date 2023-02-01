@@ -67,3 +67,9 @@ operation::add-product-to-cart[]
 장바구니에 담긴 상품의 수량을 수정한다.
 
 operation::update-cart-product-quantity[]
+
+=== 장바구니에 담긴 상품 삭제하기
+
+장바구니에 담긴 상품을 삭제한다.
+
+operation::delete-cart-product[]

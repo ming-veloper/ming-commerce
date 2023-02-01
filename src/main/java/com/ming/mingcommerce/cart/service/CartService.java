@@ -1,6 +1,7 @@
 package com.ming.mingcommerce.cart.service;
 
 import com.ming.mingcommerce.cart.entity.Cart;
+import com.ming.mingcommerce.cart.model.CartProductDeleteRequest;
 import com.ming.mingcommerce.cart.model.CartProductQuantityUpdate;
 import com.ming.mingcommerce.cart.model.CartProductRequest;
 import com.ming.mingcommerce.cart.repository.CartRepository;
@@ -85,7 +86,32 @@ public class CartService {
         cartLine.updateQuantity(updateQuantity);
 
         Cart savedCart = cartRepository.saveAndFlush(cart);
+        Predicate<CartLine> isDeletedPredicate = cl -> !cl.isDeleted();
+        return savedCart.getProductList().stream().filter(isDeletedPredicate).toList().size();
+    }
 
-        return savedCart.getProductList().size();
+    /**
+     * @param currentMember
+     * @param deleteRequest
+     * @return 장바구니에 담긴 상품의 수
+     */
+    @Transactional
+    public int deleteProduct(CurrentMember currentMember, CartProductDeleteRequest deleteRequest) {
+        Cart cart = cartRepository.findByMember(currentMember);
+        String productId = deleteRequest.getProductId();
+
+        Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
+        CartLine cartLine = cart.getProductList()
+                .stream()
+                .filter(predicate)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+
+        // 상품 삭제
+        cartLine.delete(true);
+
+        Cart savedCart = cartRepository.saveAndFlush(cart);
+        Predicate<CartLine> isDeletedPredicate = cl -> !cl.isDeleted();
+        return savedCart.getProductList().stream().filter(isDeletedPredicate).toList().size();
     }
 }
