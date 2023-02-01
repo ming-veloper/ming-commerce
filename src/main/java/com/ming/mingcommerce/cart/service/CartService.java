@@ -108,7 +108,7 @@ public class CartService {
                 .orElseThrow(IllegalArgumentException::new);
 
         // 상품 삭제
-        cartLine.delete(true);
+        cartLine.delete();
 
         Cart savedCart = cartRepository.saveAndFlush(cart);
         Predicate<CartLine> isDeletedPredicate = cl -> !cl.isDeleted();
