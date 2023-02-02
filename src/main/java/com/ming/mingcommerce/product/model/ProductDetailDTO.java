@@ -21,7 +21,7 @@ public class ProductDetailDTO {
     private Double price;
 
     private String description;
-    private List<String> productImageUrl;
+    private List<String> productImageUrlList;
 
     private Category category;
 

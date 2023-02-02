@@ -28,7 +28,7 @@ public class Product extends BaseTimeEntity {
     @Column(nullable = false)
     private String description;
     @ElementCollection
-    private List<String> productImageUrl;
+    private List<String> productImageUrlList;
 
     @OneToOne
     @JoinColumn(nullable = false)

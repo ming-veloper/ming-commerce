@@ -31,7 +31,7 @@ public class ProductService {
         // 상품 이미지 테이블과 상품 테이블 조인
         Product product = productRepository.findProductById(productId);
         // Lazy loading
-        product.getProductImageUrl();
+        product.getProductImageUrlList();
 
         return modelMapper.map(product, ProductDetailDTO.class);
     }
