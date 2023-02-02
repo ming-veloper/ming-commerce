@@ -28,8 +28,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +52,50 @@ class CartControllerTest extends BaseControllerTest {
     CartService cartService;
     @Autowired
     private MemberRepository memberRepository;
+
+    @Test
+    @DisplayName("장바구니의 상품을 조회한다")
+    void getCartProduct() throws Exception {
+        // 멤버 생성과 상품 생성
+        Member member = saveMember();
+        saveProduct();
+        // 상품 조회
+        Product product = productRepository.findAll().stream().findFirst().get();
+        // 장바구니에 상품 담기
+        String productId = product.getProductId();
+        CartProductRequest request = CartProductRequest.builder().productId(productId).quantity(10L).build();
+
+        String token = jwtTokenUtil.issueToken(member).getAccessToken();
+
+        CurrentMember currentMember = modelMapper.map(member, CurrentMember.class);
+        cartService.addProduct(currentMember, request);
+
+        mockMvc.perform(get("/api/carts")
+                        .header(X_WWW_MING_AUTHORIZATION, token))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$[0].productId").exists())
+                .andExpect(jsonPath("$[0].price").exists())
+                .andExpect(jsonPath("$[0].thumbnailImageUrl").exists())
+
+                .andDo(document("get-cart-products",
+                        requestHeaders(
+                                headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].productId").description("상품 고유 id"),
+                                fieldWithPath("[].thumbnailImageUrl").description("상품 썸네일 url"),
+                                fieldWithPath("[].productName").description("상품의 이름"),
+                                fieldWithPath("[].price").description("상품의 가격"),
+                                fieldWithPath("[].quantity").description("상품의 수량"),
+                                fieldWithPath("[].createdDate").description("생성일"),
+                                fieldWithPath("[].modifiedDate").description("수정일")
+                        )
+                ))
+
+
+        ;
+    }
 
     @Test
     @DisplayName("장바구니에 상품을 추가한다")

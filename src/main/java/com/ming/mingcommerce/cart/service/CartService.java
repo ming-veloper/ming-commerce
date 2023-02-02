@@ -4,6 +4,7 @@ import com.ming.mingcommerce.cart.entity.Cart;
 import com.ming.mingcommerce.cart.model.CartProductDeleteRequest;
 import com.ming.mingcommerce.cart.model.CartProductQuantityUpdate;
 import com.ming.mingcommerce.cart.model.CartProductRequest;
+import com.ming.mingcommerce.cart.model.CartProductDTO;
 import com.ming.mingcommerce.cart.repository.CartRepository;
 import com.ming.mingcommerce.cart.vo.CartLine;
 import com.ming.mingcommerce.member.entity.Member;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -53,19 +55,19 @@ public class CartService {
         Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
 
         // 장바구니에 상품이 이미 존재한다면 dirty checking 으로 업데이트하고, 새로운 상품이라면 cartline 객체를 새로 생성하여 저장.
-        cart.getProductList()
+        cart.getCartLines()
                 .stream()
                 .filter(predicate)
                 .findFirst()
                 .ifPresentOrElse((cartLine) -> cartLine.plusQuantity(quantity),
                         () -> {
                             CartLine cartLine = CartLine.createCartLine(product, quantity);
-                            cart.getProductList().add(cartLine);
+                            cart.getCartLines().add(cartLine);
                         });
 
         Cart savedCart = cartRepository.saveAndFlush(cart);
 
-        return savedCart.getProductList().size();
+        return savedCart.getCartLines().size();
     }
 
     @Transactional
@@ -77,7 +79,7 @@ public class CartService {
         // 장바구니에서 수량 업데이트를 하고자하는 카트 상품을 찾는다
         Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
 
-        CartLine cartLine = cart.getProductList()
+        CartLine cartLine = cart.getCartLines()
                 .stream()
                 .filter(predicate)
                 .findFirst()
@@ -87,7 +89,7 @@ public class CartService {
 
         Cart savedCart = cartRepository.saveAndFlush(cart);
         Predicate<CartLine> isDeletedPredicate = cl -> !cl.isDeleted();
-        return savedCart.getProductList().stream().filter(isDeletedPredicate).toList().size();
+        return savedCart.getCartLines().stream().filter(isDeletedPredicate).toList().size();
     }
 
     /**
@@ -101,7 +103,7 @@ public class CartService {
         String productId = deleteRequest.getProductId();
 
         Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
-        CartLine cartLine = cart.getProductList()
+        CartLine cartLine = cart.getCartLines()
                 .stream()
                 .filter(predicate)
                 .findFirst()
@@ -112,6 +114,15 @@ public class CartService {
 
         Cart savedCart = cartRepository.saveAndFlush(cart);
         Predicate<CartLine> isDeletedPredicate = cl -> !cl.isDeleted();
-        return savedCart.getProductList().stream().filter(isDeletedPredicate).toList().size();
+        return savedCart.getCartLines().stream().filter(isDeletedPredicate).toList().size();
+    }
+
+    /**
+     * 상품 조회
+     *
+     * @param currentMember
+     */
+    public List<CartProductDTO> findProducts(CurrentMember currentMember) {
+        return cartRepository.getCartProductResponse(currentMember.getEmail());
     }
 }

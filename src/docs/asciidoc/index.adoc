@@ -53,6 +53,12 @@ operation::get-products[]
 
 == Cart
 
+=== 장바구니 상품 조회하기
+
+장바구니의 상품을 조회한다. 삭제여부가 false 인 상품만을 조회한다.
+
+operation::get-cart-products[]
+
 === 장바구니에 상품 담기
 
 상품 아이디(productId) 와 수량(quantity)를 쿼리파라미터로 하여 장바구니에 상품을 담는다.
