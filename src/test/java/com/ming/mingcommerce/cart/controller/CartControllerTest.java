@@ -76,22 +76,22 @@ class CartControllerTest extends BaseControllerTest {
                         .header(X_WWW_MING_AUTHORIZATION, token))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$[0].productId").exists())
-                .andExpect(jsonPath("$[0].price").exists())
-                .andExpect(jsonPath("$[0].thumbnailImageUrl").exists())
+                .andExpect(jsonPath("$['result'][0].productId").exists())
+                .andExpect(jsonPath("$['result'][0].price").exists())
+                .andExpect(jsonPath("$['result'][0].thumbnailImageUrl").exists())
 
                 .andDo(document("get-cart-products",
                         requestHeaders(
                                 headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")
                         ),
                         responseFields(
-                                fieldWithPath("[].productId").description("상품 고유 id"),
-                                fieldWithPath("[].thumbnailImageUrl").description("상품 썸네일 url"),
-                                fieldWithPath("[].productName").description("상품의 이름"),
-                                fieldWithPath("[].price").description("상품의 가격"),
-                                fieldWithPath("[].quantity").description("상품의 수량"),
-                                fieldWithPath("[].createdDate").description("생성일"),
-                                fieldWithPath("[].modifiedDate").description("수정일")
+                                fieldWithPath("result[].productId").description("상품 고유 id"),
+                                fieldWithPath("result[].thumbnailImageUrl").description("상품 썸네일 url"),
+                                fieldWithPath("result[].productName").description("상품의 이름"),
+                                fieldWithPath("result[].price").description("상품의 가격"),
+                                fieldWithPath("result[].quantity").description("상품의 수량"),
+                                fieldWithPath("result[].createdDate").description("생성일"),
+                                fieldWithPath("result[].modifiedDate").description("수정일")
                         )
                 ))
 
