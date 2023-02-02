@@ -1,15 +1,14 @@
-package com.ming.mingcommerce.product;
+package com.ming.mingcommerce.product.controller;
 
+import com.ming.mingcommerce.product.ProductModel;
+import com.ming.mingcommerce.product.model.ProductDetailDTO;
 import com.ming.mingcommerce.product.service.ProductCrawlService;
 import com.ming.mingcommerce.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,6 +27,13 @@ public class ProductController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    /**
+     * 상품 조회
+     *
+     * @param page
+     * @param category
+     * @return 상품 목록을 10개씩 반환한다.
+     */
     @GetMapping("/products")
     public ResponseEntity<?> getProducts(@RequestParam int page, @RequestParam String category) {
         PageRequest pageRequest = PageRequest.of(page, 10);
@@ -35,5 +41,18 @@ public class ProductController {
         List<ProductModel> products = productService.getProducts(category, pageRequest);
 
         return new ResponseEntity<>(Map.of("result", products), HttpStatus.OK);
+    }
+
+    /**
+     * 상품 상세 조회
+     *
+     * @param productId 상품 id
+     * @return 상품 id 에 해당하는 상품 상세를 반환한다.
+     */
+    @GetMapping("/products/{productId}")
+    public ResponseEntity<?> getProductDetail(@PathVariable String productId) {
+        ProductDetailDTO productDetail = productService.getProductDetail(productId);
+
+        return new ResponseEntity<>(Map.of("result", productDetail), HttpStatus.OK);
     }
 }
