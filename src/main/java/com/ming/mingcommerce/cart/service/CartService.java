@@ -123,13 +123,6 @@ public class CartService {
      * @param currentMember
      */
     public List<CartProductResponse> findProducts(CurrentMember currentMember) {
-//        Cart cart = cartRepository.findByMember(currentMember);
-//        List<CartLine> cartLineList = cart.getProductList();
-//        return cartLineList.stream().map(cartLine -> {
-//                    Product product = productRepository.findProductById(cartLine.getProductId());
-//                    return CartProductResponse.of(cartLine, product);
-//                })
-//                .toList();
         return cartRepository.getCartProductResponse(currentMember.getEmail());
     }
 }
