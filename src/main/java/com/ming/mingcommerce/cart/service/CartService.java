@@ -4,6 +4,7 @@ import com.ming.mingcommerce.cart.entity.Cart;
 import com.ming.mingcommerce.cart.model.CartProductDeleteRequest;
 import com.ming.mingcommerce.cart.model.CartProductQuantityUpdate;
 import com.ming.mingcommerce.cart.model.CartProductRequest;
+import com.ming.mingcommerce.cart.model.CartProductResponse;
 import com.ming.mingcommerce.cart.repository.CartRepository;
 import com.ming.mingcommerce.cart.vo.CartLine;
 import com.ming.mingcommerce.member.entity.Member;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -113,5 +115,21 @@ public class CartService {
         Cart savedCart = cartRepository.saveAndFlush(cart);
         Predicate<CartLine> isDeletedPredicate = cl -> !cl.isDeleted();
         return savedCart.getProductList().stream().filter(isDeletedPredicate).toList().size();
+    }
+
+    /**
+     * 상품 조회
+     *
+     * @param currentMember
+     */
+    public List<CartProductResponse> findProducts(CurrentMember currentMember) {
+//        Cart cart = cartRepository.findByMember(currentMember);
+//        List<CartLine> cartLineList = cart.getProductList();
+//        return cartLineList.stream().map(cartLine -> {
+//                    Product product = productRepository.findProductById(cartLine.getProductId());
+//                    return CartProductResponse.of(cartLine, product);
+//                })
+//                .toList();
+        return cartRepository.getCartProductResponse(currentMember.getEmail());
     }
 }
