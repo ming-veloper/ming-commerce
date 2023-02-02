@@ -97,7 +97,7 @@ public class ProductControllerTest extends BaseControllerTest {
                                 fieldWithPath("result.productId").description("상품의 고유값. UUID 형식"),
                                 fieldWithPath("result.productName").description("상품명"),
                                 fieldWithPath("result.thumbnailImageUrl").description("상품 썸네일 url"),
-                                fieldWithPath("result.productImageUrl[]").description("상품 이미지 url"),
+                                fieldWithPath("result.productImageUrlList[]").description("상품 이미지 url"),
                                 fieldWithPath("result.description").description("상품 상세 설명"),
                                 fieldWithPath("result.price").description("상품의 가격"),
                                 fieldWithPath("result.category").description("상품의 카테고리"),
