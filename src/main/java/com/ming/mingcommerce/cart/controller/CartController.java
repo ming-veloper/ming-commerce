@@ -32,7 +32,7 @@ public class CartController {
         }
         List<CartProductDTO> products = cartService.findProducts(currentMember);
 
-        return new ResponseEntity<>(products, HttpStatus.OK);
+        return new ResponseEntity<>( Map.of("result", products), HttpStatus.OK);
     }
 
     /**
