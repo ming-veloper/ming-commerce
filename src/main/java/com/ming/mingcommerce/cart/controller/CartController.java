@@ -3,7 +3,7 @@ package com.ming.mingcommerce.cart.controller;
 import com.ming.mingcommerce.cart.model.CartProductDeleteRequest;
 import com.ming.mingcommerce.cart.model.CartProductQuantityUpdate;
 import com.ming.mingcommerce.cart.model.CartProductRequest;
-import com.ming.mingcommerce.cart.model.CartProductResponse;
+import com.ming.mingcommerce.cart.model.CartProductDTO;
 import com.ming.mingcommerce.cart.service.CartService;
 import com.ming.mingcommerce.security.CurrentMember;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class CartController {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        List<CartProductResponse> products = cartService.findProducts(currentMember);
+        List<CartProductDTO> products = cartService.findProducts(currentMember);
 
         return new ResponseEntity<>(products, HttpStatus.OK);
     }

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartProductResponse {
+public class CartProductDTO {
     private String productId;
     private Double price;
     private Long quantity;
@@ -23,8 +23,8 @@ public class CartProductResponse {
 
     private LocalDateTime modifiedDate;
 
-    public static CartProductResponse of(CartLine cartLine, Product product) {
-        return CartProductResponse.builder()
+    public static CartProductDTO of(CartLine cartLine, Product product) {
+        return CartProductDTO.builder()
                 .productId(cartLine.getProductId())
                 .quantity(cartLine.getQuantity())
                 .createdDate(cartLine.getCreatedDate())
