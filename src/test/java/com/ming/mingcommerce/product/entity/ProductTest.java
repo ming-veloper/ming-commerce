@@ -29,7 +29,7 @@ class ProductTest {
         Product product = Product
                 .builder()
                 .productName(productName)
-                .productImageUrl(List.of("https://m.media-amazon.com/images/I/81rUkJ7owXL._SL1500_.jpg", "https://m.media-amazon.com/images/I/913UOn3IttL._SL1500_.jpg"))
+                .productImageUrlList(List.of("https://m.media-amazon.com/images/I/81rUkJ7owXL._SL1500_.jpg", "https://m.media-amazon.com/images/I/913UOn3IttL._SL1500_.jpg"))
                 .description("Start your day with tasty pastry crust and sweet strawberry flavor; A delicious morning treat that’s great for kids and adults")
                 .category(category)
                 .price(13.9d)
@@ -43,6 +43,6 @@ class ProductTest {
         // 상품 생성 확인
         assertThat(savedProduct.getProductId()).isNotNull();
         assertThat(savedProduct.getProductName()).isEqualTo(productName);
-        assertThat(savedProduct.getProductImageUrl().size()).isEqualTo(2);
+        assertThat(savedProduct.getProductImageUrlList().size()).isEqualTo(2);
     }
 }

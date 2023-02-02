@@ -18,7 +18,7 @@ public class ProductRequest {
     private Double price;
 
     private String description;
-    private List<String> productImageUrl;
+    private List<String> productImageUrlList;
 
     private Category category;
 

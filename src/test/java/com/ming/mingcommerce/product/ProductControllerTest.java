@@ -10,13 +10,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,5 +76,39 @@ public class ProductControllerTest extends BaseControllerTest {
                         )))
         ;
 
+    }
+
+    @Test
+    @DisplayName("상품 상세를 조회한다")
+    void getProductDetail() throws Exception {
+        Product product = productRepository.findAll().stream().findFirst().get();
+        String productId = product.getProductId();
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/products/{productId}", productId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$['result'].productId").exists())
+                .andExpect(jsonPath("$['result'].price").exists())
+                .andExpect(jsonPath("$['result'].thumbnailImageUrl").exists())
+
+                .andDo(document("get-product-detail",
+                        pathParameters(
+                                parameterWithName("productId").description("상품 아이디")
+                        ),
+                        responseFields(
+                                fieldWithPath("result.productId").description("상품의 고유값. UUID 형식"),
+                                fieldWithPath("result.productName").description("상품명"),
+                                fieldWithPath("result.thumbnailImageUrl").description("상품 썸네일 url"),
+                                fieldWithPath("result.productImageUrl[]").description("상품 이미지 url"),
+                                fieldWithPath("result.description").description("상품 상세 설명"),
+                                fieldWithPath("result.price").description("상품의 가격"),
+                                fieldWithPath("result.category").description("상품의 카테고리"),
+                                fieldWithPath("result.createdDate").description("상품 생성일"),
+                                fieldWithPath("result.modifiedDate").description("상품 수정일"),
+                                fieldWithPath("result.category.createdDate").description("상품의 생성일"),
+                                fieldWithPath("result.category.modifiedDate").description("상품의 수정일"),
+                                fieldWithPath("result.category.categoryId").description("상품의 카테고리 id"),
+                                fieldWithPath("result.category.categoryName").description("상품의 카테고리 이름")
+                        )
+                ))
+        ;
     }
 }
