@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Embeddable
 @Getter
@@ -16,7 +17,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartLine {
-
+    @Column(nullable = false, updatable = false)
+    private String uuid;
     private String productId;
     private Double price;
     private Long quantity;
@@ -29,6 +31,8 @@ public class CartLine {
 
     public static CartLine createCartLine(Product product, Long quantity) {
         return CartLine.builder()
+                // TODO using shorter uuid
+                .uuid(UUID.randomUUID().toString())
                 .productId(product.getProductId())
                 .price(product.getPrice())
                 .quantity(quantity)
