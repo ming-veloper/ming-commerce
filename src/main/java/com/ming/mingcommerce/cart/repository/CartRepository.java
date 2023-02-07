@@ -29,7 +29,7 @@ public interface CartRepository extends JpaRepository<Cart, String> {
 
     @Query("""
             SELECT new com.ming.mingcommerce.cart.model.CartProductDTO(
-                p.productId, p.price, cl.quantity, p.productName, p.thumbnailImageUrl, cl.createdDate, cl.modifiedDate
+                cl.uuid, p.productId, p.price, cl.quantity, p.productName, p.thumbnailImageUrl, cl.createdDate, cl.modifiedDate
             )
             FROM Cart c
             JOIN c.cartLines cl

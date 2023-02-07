@@ -76,6 +76,7 @@ class CartControllerTest extends BaseControllerTest {
                         .header(X_WWW_MING_AUTHORIZATION, token))
                 .andExpect(status().isOk())
                 .andDo(print())
+                .andExpect(jsonPath("$['result'][0].uuid").exists())
                 .andExpect(jsonPath("$['result'][0].productId").exists())
                 .andExpect(jsonPath("$['result'][0].price").exists())
                 .andExpect(jsonPath("$['result'][0].thumbnailImageUrl").exists())
@@ -85,6 +86,7 @@ class CartControllerTest extends BaseControllerTest {
                                 headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")
                         ),
                         responseFields(
+                                fieldWithPath("result[].uuid").description("장바구니 상품 고유 id"),
                                 fieldWithPath("result[].productId").description("상품 고유 id"),
                                 fieldWithPath("result[].thumbnailImageUrl").description("상품 썸네일 url"),
                                 fieldWithPath("result[].productName").description("상품의 이름"),
