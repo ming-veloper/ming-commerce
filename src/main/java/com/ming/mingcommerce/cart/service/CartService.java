@@ -66,8 +66,8 @@ public class CartService {
                         });
 
         Cart savedCart = cartRepository.saveAndFlush(cart);
-
-        return savedCart.getCartLines().size();
+        // 카트 상품 개수 반환
+        return savedCart.getCartLines().stream().filter(cl -> !cl.isDeleted()).toList().size();
     }
 
     @Transactional
