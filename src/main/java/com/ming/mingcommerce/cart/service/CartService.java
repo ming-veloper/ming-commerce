@@ -67,7 +67,10 @@ public class CartService {
 
         Cart savedCart = cartRepository.saveAndFlush(cart);
 
-        return savedCart.getCartLines().size();
+        // 삭제되지 않은 상품을 검색하기 위한 predicate
+        Predicate<CartLine> deletePredicate = cartLine -> Objects.equals(cartLine.isDeleted(), false);
+        // 카트 상품 개수 반환
+        return savedCart.getCartLines().stream().filter(deletePredicate).toList().size();
     }
 
     @Transactional
