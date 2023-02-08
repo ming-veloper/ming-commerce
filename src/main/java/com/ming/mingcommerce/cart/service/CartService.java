@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 @Service
@@ -39,7 +40,7 @@ public class CartService {
      */
     @Transactional
     public int addProduct(CurrentMember currentMember, CartProductRequest request) {
-        Cart cart = cartRepository.findByMember(currentMember);
+        Cart cart = cartRepository.findAllByMember(currentMember);
         // 처음 카트에 담는 멤버라면, 멤버 세팅
         if (cart.getMember() == null) {
             Member member = memberRepository.findMemberByEmail(currentMember.getEmail());
@@ -55,15 +56,28 @@ public class CartService {
         Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
 
         // 장바구니에 상품이 이미 존재한다면 dirty checking 으로 업데이트하고, 새로운 상품이라면 cartline 객체를 새로 생성하여 저장.
-        cart.getCartLines()
+        Optional<CartLine> optionalCartLine = cart.getCartLines()
                 .stream()
                 .filter(predicate)
-                .findFirst()
-                .ifPresentOrElse((cartLine) -> cartLine.plusQuantity(quantity),
-                        () -> {
-                            CartLine cartLine = CartLine.createCartLine(product, quantity);
-                            cart.getCartLines().add(cartLine);
-                        });
+                .findFirst();
+        // case 1. 처음 담는 상품인 경우
+        if (optionalCartLine.isEmpty()) {
+            CartLine cartLine = CartLine.createCartLine(product, quantity);
+            cart.getCartLines().add(cartLine);
+        }
+        else {
+            CartLine cartLine = optionalCartLine.get();
+            // case 2. 이전에 담았던 상품이고 deleted 가 true 인 상품인 경우
+            if (cartLine.isDeleted()) {
+                // 장바구니에서 삭제했었던 상품을 다시 담는다
+                cartLine.putBack();
+                cartLine.updateQuantity(request.getQuantity());
+            }
+            // case 3. 이전에 담았던 상품이고 deleted 가 false 인 상품의 경우
+            else {
+                cartLine.plusQuantity(request.getQuantity());
+            }
+        }
 
         Cart savedCart = cartRepository.saveAndFlush(cart);
 

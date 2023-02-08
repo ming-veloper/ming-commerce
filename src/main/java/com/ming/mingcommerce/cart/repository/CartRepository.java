@@ -26,6 +26,11 @@ public interface CartRepository extends JpaRepository<Cart, String> {
                 .orElseGet(Cart::new);
     }
 
+    default Cart findAllByMember(CurrentMember currentMember) {
+        String uuid = currentMember.getUuid();
+        return findAllCartLines(uuid).orElseGet(Cart::new);
+    }
+
 
     @Query("""
             SELECT new com.ming.mingcommerce.cart.model.CartProductDTO(
@@ -40,4 +45,11 @@ public interface CartRepository extends JpaRepository<Cart, String> {
             """)
     List<CartProductDTO> getCartProductResponse(String email);
 
+    // CartLine 의 deleted 가 true 인 카트 상품까지 모두 조회한다.
+    @Query("""
+         SELECT c
+            FROM Cart c
+            WHERE c.member.uuid = :uuid
+    """)
+    Optional<Cart> findAllCartLines(@Param("uuid")String uuid);
 }

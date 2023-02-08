@@ -52,4 +52,9 @@ public class CartLine {
     public void delete() {
         this.deleted = true;
     }
+
+    // 이전에 삭제했던 상품을 다시 담는다
+    public void putBack() {
+        this.deleted = false;
+    }
 }
