@@ -52,7 +52,7 @@ public class CartService {
         Product product = productRepository.findProductById(productId);
 
         // 장바구니에 해당 상품이 이미 담겨있는지 알아보기 위한 predicate
-        Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
+        Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId) && !cartLine.isDeleted();
 
         // 장바구니에 상품이 이미 존재한다면 dirty checking 으로 업데이트하고, 새로운 상품이라면 cartline 객체를 새로 생성하여 저장.
         cart.getCartLines()
