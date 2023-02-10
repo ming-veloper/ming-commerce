@@ -61,7 +61,8 @@ class OrderControllerTest extends BaseControllerTest {
                         ),
                         responseFields(
                                 fieldWithPath("orderId").description("주문 아이디"),
-                                fieldWithPath("amount").description("주문 총 합계")
+                                fieldWithPath("amount").description("주문 총 합계"),
+                                fieldWithPath("orderName").description("'[상품이름]외 [주문상품개수]건' 형식의 주문 이름")
                         )
 
                 ))

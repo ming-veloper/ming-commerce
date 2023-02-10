@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,22 +41,31 @@ public class OrderService {
         });
 
         // 총 주문 금액 계산
-        Double totalAmount = calculateTotalAmount(orderRequestList);
+        Map<?, ?> result = calculateTotalAmount(orderRequestList);
 
         // 주문 저장
         orderRepository.save(order);
 
-        return new OrderResponse(order.getOrderId(), totalAmount);
+        return new OrderResponse(order.getOrderId(), Double.parseDouble(result.get("totalAmount").toString()),result.get("productNameMsg").toString());
     }
 
     // 주문 총 금액 계산
-    private Double calculateTotalAmount(List<OrderRequest> orderRequestList) {
+    private Map<?, ?> calculateTotalAmount(List<OrderRequest> orderRequestList) {
         List<String> cartLineUuidList = orderRequestList.stream().map(OrderRequest::getCartLindUuid).toList();
         // 상품 가격, 상품 수량이 담긴 CartLineDTO
         List<CartLineDTO> cartLineDTOList = cartRepository.getCartLineDTO(cartLineUuidList);
 
-        // 총 합계를 계산하여 반환
-        return cartLineDTOList.stream()
+        // 총 합계를 계산
+        Double totalAmount = cartLineDTOList.stream()
                 .mapToDouble((cl) -> cl.getPrice() * cl.getQuantity()).sum();
+
+        // 주문 이름을 구한다
+        String productNameMsg = "";
+        String firstProductName = cartLineDTOList.get(0).getProductName();
+        int size = cartLineUuidList.size() - 1;
+        productNameMsg += firstProductName + " 외 " + size + "건";
+
+        return Map.of("totalAmount", totalAmount, "productNameMsg", productNameMsg);
+
     }
 }

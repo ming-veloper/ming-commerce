@@ -8,4 +8,5 @@ import lombok.Getter;
 public class OrderResponse {
     private String orderId;
     private Double amount;
+    private String orderName;
 }

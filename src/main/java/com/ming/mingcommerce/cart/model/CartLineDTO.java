@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class CartLineDTO {
     private Long quantity;
     private Double price;
+    private String productName;
 }
