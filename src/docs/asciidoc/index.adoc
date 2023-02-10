@@ -85,3 +85,12 @@ operation::update-cart-product-quantity[]
 장바구니에 담긴 상품을 삭제한다.
 
 operation::delete-cart-product[]
+
+== Order
+
+=== 장바구니에 담긴 상품 주문하기
+
+장바구니에 담긴 상품을 주문한다.
+CartLine 의 고유 id인 uuid 로 장바구니 안의 상품을 선택하여 주문할 수 있다.
+
+operation::order[]

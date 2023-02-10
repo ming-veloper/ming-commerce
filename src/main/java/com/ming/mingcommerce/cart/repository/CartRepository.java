@@ -1,6 +1,7 @@
 package com.ming.mingcommerce.cart.repository;
 
 import com.ming.mingcommerce.cart.entity.Cart;
+import com.ming.mingcommerce.cart.model.CartLineDTO;
 import com.ming.mingcommerce.cart.model.CartProductDTO;
 import com.ming.mingcommerce.security.CurrentMember;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,5 +40,16 @@ public interface CartRepository extends JpaRepository<Cart, String> {
                 AND c.member.email = :email
             """)
     List<CartProductDTO> getCartProductResponse(String email);
+
+    @Query("""
+            SELECT new com.ming.mingcommerce.cart.model.CartLineDTO(
+                cl.quantity, cl.price, p.productName
+            )
+            FROM Cart c
+            JOIN c.cartLines cl
+            JOIN Product p
+                WHERE cl.uuid IN (:cartLineUuidList)
+            """)
+    List<CartLineDTO> getCartLineDTO(@Param("cartLineUuidList") List<String> cartLineUuidList);
 
 }
