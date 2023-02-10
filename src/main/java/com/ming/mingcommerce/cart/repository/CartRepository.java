@@ -48,6 +48,7 @@ public interface CartRepository extends JpaRepository<Cart, String> {
             FROM Cart c
             JOIN c.cartLines cl
             JOIN Product p
+                ON cl.productId = p.productId
                 WHERE cl.uuid IN (:cartLineUuidList)
             """)
     List<CartLineDTO> getCartLineDTO(@Param("cartLineUuidList") List<String> cartLineUuidList);

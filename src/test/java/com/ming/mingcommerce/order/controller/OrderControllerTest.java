@@ -57,7 +57,7 @@ class OrderControllerTest extends BaseControllerTest {
                         requestHeaders(headerWithName(X_WWW_MING_AUTHORIZATION).description("인증 헤더")
                         ),
                         requestFields(
-                                fieldWithPath("cartLindUuidList.[]").description("카트라인의 uuid 리스트")
+                                fieldWithPath("cartLineUuidList.[]").description("카트라인의 uuid 리스트")
                         ),
                         responseFields(
                                 fieldWithPath("orderId").description("주문 아이디"),

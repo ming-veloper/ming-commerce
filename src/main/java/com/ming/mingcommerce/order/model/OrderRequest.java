@@ -13,9 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
-    private List<String> cartLindUuidList = new ArrayList<>();
+    private List<String> cartLineUuidList = new ArrayList<>();
 
     public void addCartLineUuid(List<String> uuidList) {
-        cartLindUuidList.addAll(uuidList);
+        cartLineUuidList.addAll(uuidList);
     }
 }
