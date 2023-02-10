@@ -6,11 +6,7 @@ import com.ming.mingcommerce.cart.model.CartProductQuantityUpdate;
 import com.ming.mingcommerce.cart.model.CartProductRequest;
 import com.ming.mingcommerce.cart.service.CartService;
 import com.ming.mingcommerce.member.entity.Member;
-import com.ming.mingcommerce.member.entity.Role;
-import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.member.service.MemberService;
-import com.ming.mingcommerce.product.entity.Category;
-import com.ming.mingcommerce.product.entity.CategoryName;
 import com.ming.mingcommerce.product.entity.Product;
 import com.ming.mingcommerce.product.repository.CategoryRepository;
 import com.ming.mingcommerce.product.repository.ProductRepository;
@@ -39,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class CartControllerTest extends BaseControllerTest {
-    public static final String X_WWW_MING_AUTHORIZATION = "X-WWW-MING-AUTHORIZATION";
     @Autowired
     ProductRepository productRepository;
 
@@ -52,8 +47,6 @@ class CartControllerTest extends BaseControllerTest {
     CategoryRepository categoryRepository;
     @Autowired
     CartService cartService;
-    @Autowired
-    private MemberRepository memberRepository;
 
     @Test
     @DisplayName("장바구니의 상품을 조회한다")
@@ -193,22 +186,6 @@ class CartControllerTest extends BaseControllerTest {
 
         ;
 
-    }
-
-    private Member saveMember() {
-        Member member = Member.builder().memberName("tester").role(Role.USER).email("tester@ming.com").password("tester123!").build();
-        return memberRepository.saveAndFlush(member);
-    }
-
-    private void saveProduct() {
-        Category category = new Category(CategoryName.DAIRY_EGGS);
-        categoryRepository.save(category);
-
-        for (int i = 1; i < 3; i++) {
-            Product product = Product.builder().category(category).productName("신선 달걀 " + i + "구").price(7.89d).thumbnailImageUrl("http://helloworld.com/egg.png").description("신선 신선").build();
-
-            productRepository.save(product);
-        }
     }
 
 }
