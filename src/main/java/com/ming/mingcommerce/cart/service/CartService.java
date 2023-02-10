@@ -77,7 +77,7 @@ public class CartService {
         String productId = update.getProductId();
         Long updateQuantity = update.getQuantity();
         // 장바구니에서 수량 업데이트를 하고자하는 카트 상품을 찾는다
-        Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
+        Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId) && !cartLine.isDeleted();
 
         CartLine cartLine = cart.getCartLines()
                 .stream()
@@ -102,7 +102,7 @@ public class CartService {
         Cart cart = cartRepository.findByMember(currentMember);
         String productId = deleteRequest.getProductId();
 
-        Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId);
+        Predicate<CartLine> predicate = cartLine -> Objects.equals(cartLine.getProductId(), productId) && !cartLine.isDeleted();
         CartLine cartLine = cart.getCartLines()
                 .stream()
                 .filter(predicate)

@@ -29,6 +29,7 @@ public class Order extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.PENDING; // default
     @ElementCollection
+    @OrderColumn(name = "line_idx")
     @CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_id"))
     private List<OrderLine> orderLineList;
 
