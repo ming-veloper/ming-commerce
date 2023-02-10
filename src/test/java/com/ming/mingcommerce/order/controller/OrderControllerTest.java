@@ -42,7 +42,7 @@ class OrderControllerTest extends BaseControllerTest {
     void order() throws Exception {
         Member member = saveMember();
         List<Product> products = saveProduct();
-        List<OrderRequest> orderRequests = putInCart(products, member);
+        OrderRequest orderRequests = putInCart(products, member);
         String content = objectMapper.writeValueAsString(orderRequests);
 
         String token = jwtTokenUtil.issueToken(member).getAccessToken();
@@ -57,7 +57,7 @@ class OrderControllerTest extends BaseControllerTest {
                         requestHeaders(headerWithName(X_WWW_MING_AUTHORIZATION).description("인증 헤더")
                         ),
                         requestFields(
-                                fieldWithPath("[].cartLindUuid").description("카트라인의 uuid 리스트")
+                                fieldWithPath("cartLindUuidList.[]").description("카트라인의 uuid 리스트")
                         ),
                         responseFields(
                                 fieldWithPath("orderId").description("주문 아이디"),
@@ -70,7 +70,7 @@ class OrderControllerTest extends BaseControllerTest {
     }
 
     // 인자로 주어진 상품 리스트를 장바구니에 담는다
-    private List<OrderRequest> putInCart(List<Product> products, Member member) {
+    private OrderRequest putInCart(List<Product> products, Member member) {
         CurrentMember currentMember = modelMapper.map(member, CurrentMember.class);
         products.forEach((product) -> {
                     CartProductRequest request = CartProductRequest.builder().productId(product.getProductId()).quantity(10L).build();
@@ -82,7 +82,10 @@ class OrderControllerTest extends BaseControllerTest {
         List<CartProductDTO> cartProductResponse = cartRepository.getCartProductResponse(member.getEmail());
         List<String> list = cartProductResponse.stream().map(CartProductDTO::getUuid).toList();
 
-        return list.stream().map(OrderRequest::new).toList();
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.addCartLineUuid(list);
+
+        return orderRequest;
     }
 
 }

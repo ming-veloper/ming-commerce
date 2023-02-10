@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/orders")
@@ -32,7 +30,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/order")
-    public ResponseEntity<?> order(Authentication authentication, @RequestBody List<OrderRequest> orderRequest) {
+    public ResponseEntity<?> order(Authentication authentication, @RequestBody OrderRequest orderRequest) {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }

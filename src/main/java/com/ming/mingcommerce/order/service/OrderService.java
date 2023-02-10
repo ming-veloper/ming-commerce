@@ -30,13 +30,13 @@ public class OrderService {
      * @return
      */
     @Transactional
-    public OrderResponse order(Member member, List<OrderRequest> orderRequestList) {
+    public OrderResponse order(Member member, OrderRequest orderRequestList) {
         // 주문 생성
         Order order = Order.create(member);
 
         // 주문 라인 생성
-        orderRequestList.forEach(orderRequest -> {
-            OrderLine orderLine = OrderLine.create(orderRequest.getCartLindUuid());
+        orderRequestList.getCartLindUuidList().forEach(orderRequest -> {
+            OrderLine orderLine = OrderLine.create(orderRequest);
             order.getOrderLineList().add(orderLine);
         });
 
@@ -46,12 +46,12 @@ public class OrderService {
         // 주문 저장
         orderRepository.save(order);
 
-        return new OrderResponse(order.getOrderId(), Double.parseDouble(result.get("totalAmount").toString()),result.get("productNameMsg").toString());
+        return new OrderResponse(order.getOrderId(), Double.parseDouble(result.get("totalAmount").toString()), result.get("productNameMsg").toString());
     }
 
     // 주문 총 금액 계산
-    private Map<?, ?> calculateTotalAmount(List<OrderRequest> orderRequestList) {
-        List<String> cartLineUuidList = orderRequestList.stream().map(OrderRequest::getCartLindUuid).toList();
+    private Map<?, ?> calculateTotalAmount(OrderRequest orderRequest) {
+        List<String> cartLineUuidList = orderRequest.getCartLindUuidList();
         // 상품 가격, 상품 수량이 담긴 CartLineDTO
         List<CartLineDTO> cartLineDTOList = cartRepository.getCartLineDTO(cartLineUuidList);
 
