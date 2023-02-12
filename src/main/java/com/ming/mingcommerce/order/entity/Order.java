@@ -39,7 +39,7 @@ public class Order extends BaseTimeEntity {
 
     public Double calculateTotalAmount() {
         return orderLineList.stream()
-                .mapToDouble(OrderLine::calculatePrice)
+                .mapToDouble(orderLine -> orderLine.calculatePrice() * 1000)
                 .sum();
     }
 
