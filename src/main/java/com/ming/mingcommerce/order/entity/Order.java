@@ -33,6 +33,22 @@ public class Order extends BaseTimeEntity {
     @CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_id"))
     private List<OrderLine> orderLineList;
 
+    public void addOrderLine(OrderLine orderLine) {
+        getOrderLineList().add(orderLine);
+    }
+
+    public Double calculateTotalAmount() {
+        return orderLineList.stream()
+                .mapToDouble(OrderLine::calculatePrice)
+                .sum();
+    }
+
+    public String extractOrderName() {
+        var firstProductName = getOrderLineList().get(0).getProductName();
+        String shortenFirstProductName = firstProductName.substring(0, firstProductName.length() / 2);
+        return shortenFirstProductName + "..." + " 외 " + getOrderLineList().size() + "건";
+    }
+
     public static Order create(Member member) {
         return Order.builder()
                 .member(member)

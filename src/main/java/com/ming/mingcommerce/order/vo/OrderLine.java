@@ -1,5 +1,6 @@
 package com.ming.mingcommerce.order.vo;
 
+import com.ming.mingcommerce.cart.model.CartLineDTO;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,12 +10,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderLine {
     private String cartLineUuid;
+    private Double price;
+    private Long quantity;
+    private String productName;
 
-    public OrderLine(String cartLineUuid) {
-        this.cartLineUuid = cartLineUuid;
+    public OrderLine(CartLineDTO cartLine) {
+        this.cartLineUuid = cartLine.getUuid();
+        this.price = cartLine.getPrice();
+        this.quantity = cartLine.getQuantity();
+        this.productName = cartLine.getProductName();
     }
 
-    public static OrderLine create(String cartLineUuid) {
-        return new OrderLine(cartLineUuid);
+    public static OrderLine create(CartLineDTO cartLine) {
+        return new OrderLine(cartLine);
+    }
+
+    public Double calculatePrice() {
+        return price * quantity;
     }
 }
