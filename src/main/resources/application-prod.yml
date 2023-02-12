@@ -1,9 +1,12 @@
+server:
+  port: 5000
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password:
-    url: jdbc:mysql://localhost:3306/ming_commerce
+    username: ${rds.username}
+    password: ${rds.password}
+    url: jdbc:mysql://${rds.hostname}:${rds.port}/${rds.db.name}
   jpa:
     show-sql: true
     hibernate:
@@ -16,7 +19,6 @@ jwt:
   access-token-duration: 604800000 # valid 1 Week
   refresh-token-duration: 2419200000 # valid 1 Month
   secret-key: igPdT8viN5t8iToOn5sfqbqASzDFlsJze16OggGsDJauk2egG5
-
 admin:
   email: admin@ming.com
   password: 1234
