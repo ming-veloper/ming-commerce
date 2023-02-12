@@ -26,46 +26,26 @@ public class OrderService {
      * 주문(Order) 과 주문 라인(OrderLine)을 생성하여 저장한 뒤 주문 id 와 총 주문 금액을 반환한다.
      *
      * @param member
-     * @param orderRequestList
+     * @param orderRequest
      * @return
      */
     @Transactional
-    public OrderResponse order(Member member, OrderRequest orderRequestList) {
+    public OrderResponse order(Member member, OrderRequest orderRequest) {
         // 주문 생성
         Order order = Order.create(member);
 
         // 주문 라인 생성
-        orderRequestList.getCartLineUuidList().forEach(orderRequest -> {
-            OrderLine orderLine = OrderLine.create(orderRequest);
-            order.getOrderLineList().add(orderLine);
-        });
+        List<CartLineDTO> cartLineDTOList = cartRepository.getCartLineDTO(orderRequest.getCartLineUuidList());
+        cartLineDTOList.stream().map(OrderLine::create).forEach(order::addOrderLine);
 
         // 총 주문 금액 계산
-        Map<?, ?> result = calculateTotalAmount(orderRequestList);
+        Double amount = order.calculateTotalAmount();
+        // 주문 이름 추출
+        String orderName = order.extractOrderName();
 
         // 주문 저장
         orderRepository.save(order);
 
-        return new OrderResponse(order.getOrderId(), Double.parseDouble(result.get("totalAmount").toString()), result.get("productNameMsg").toString());
-    }
-
-    // 주문 총 금액 계산
-    private Map<?, ?> calculateTotalAmount(OrderRequest orderRequest) {
-        List<String> cartLineUuidList = orderRequest.getCartLineUuidList();
-        // 상품 가격, 상품 수량이 담긴 CartLineDTO
-        List<CartLineDTO> cartLineDTOList = cartRepository.getCartLineDTO(cartLineUuidList);
-
-        // 총 합계를 계산
-        Double totalAmount = cartLineDTOList.stream()
-                .mapToDouble((cl) -> cl.getPrice() * cl.getQuantity()).sum();
-
-        // 주문 이름을 구한다
-        String productNameMsg = "";
-        String firstProductName = cartLineDTOList.get(0).getProductName();
-        int size = cartLineUuidList.size() - 1;
-        productNameMsg += firstProductName + " 외 " + size + "건";
-
-        return Map.of("totalAmount", totalAmount, "productNameMsg", productNameMsg);
-
+        return new OrderResponse(order.getOrderId(), amount, orderName);
     }
 }
