@@ -75,6 +75,27 @@ bootJar {
     from("${asciidoctor.outputDir}/html5") {
         into 'static/docs'
     }
+}
 
+tasks.register('release') {
+    dependsOn("build")
+
+    doLast {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine(["eb", "setenv", "SPRING_PROFILES_ACTIVE=prod"])
+            standardOutput = stdout
+        }
+
+        println("eb setenv SPRING_PROFILES_ACTIVE=prod: \n$stdout")
+
+        exec {
+            commandLine(["eb", "deploy"])
+            standardOutput = stdout
+        }
+
+        println("eb deploy: \n$stdout")
+        println("Release succeeded")
+    }
 }
 

@@ -30,9 +30,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors();
         http
                 .authorizeHttpRequests(authorize -> authorize
                         // Permit all
+                        .requestMatchers("/").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/members/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/members/email-duplication-check").permitAll()
