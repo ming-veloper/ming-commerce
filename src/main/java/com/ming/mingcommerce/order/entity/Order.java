@@ -45,8 +45,11 @@ public class Order extends BaseTimeEntity {
 
     public String extractOrderName() {
         var firstProductName = getOrderLineList().get(0).getProductName();
-        String shortenFirstProductName = firstProductName.substring(0, firstProductName.length() / 2);
-        return shortenFirstProductName + "..." + " 외 " + getOrderLineList().size() + "건";
+        String shortenFirstProductName = firstProductName.substring(0, firstProductName.length() / 2) + "...";
+        return getOrderLineList().size() > 1 ?
+                shortenFirstProductName + " 외 " + getOrderLineList().size() + "건" :
+                shortenFirstProductName;
+
     }
 
     public static Order create(Member member) {
