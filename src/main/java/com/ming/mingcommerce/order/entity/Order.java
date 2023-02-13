@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "purchase_order")
@@ -33,14 +34,31 @@ public class Order extends BaseTimeEntity {
     @CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_id"))
     private List<OrderLine> orderLineList;
 
+    private Double totalAmount; // 총 주문 금액
+
+    public static Order create(Member member) {
+        return Order.builder()
+                .member(member)
+                .orderStatus(OrderStatus.PENDING)
+                .orderLineList(new ArrayList<>())
+                .build();
+    }
+
     public void addOrderLine(OrderLine orderLine) {
         getOrderLineList().add(orderLine);
     }
 
     public Double calculateTotalAmount() {
-        return orderLineList.stream()
+        Double totalAmount = orderLineList.stream()
                 .mapToDouble(orderLine -> orderLine.calculatePrice() * 1000)
                 .sum();
+        // 총 주문 금액 세팅
+        setTotalAmount(totalAmount);
+        return totalAmount;
+    }
+
+    private void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public String extractOrderName() {
@@ -52,11 +70,13 @@ public class Order extends BaseTimeEntity {
 
     }
 
-    public static Order create(Member member) {
-        return Order.builder()
-                .member(member)
-                .orderStatus(OrderStatus.PENDING)
-                .orderLineList(new ArrayList<>())
-                .build();
+    public void validateAmount(Double payRequestAmount) {
+        if (!Objects.equals(payRequestAmount, this.totalAmount)) {
+            throw new IllegalArgumentException(String.format("결제요청 금액과 주문 금액이 일치하지 않습니다. 결제요청금액 = %f, 주문금액 = %f", payRequestAmount, this.totalAmount));
+        }
+    }
+
+    public void successPay() {
+        this.orderStatus = OrderStatus.COMPLETE;
     }
 }

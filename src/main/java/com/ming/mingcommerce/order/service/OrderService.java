@@ -37,11 +37,10 @@ public class OrderService {
         List<CartLineDTO> cartLineDTOList = cartRepository.getCartLineDTO(orderRequest.getCartLineUuidList());
         cartLineDTOList.stream().map(OrderLine::create).forEach(order::addOrderLine);
 
-        // 총 주문 금액 계산
+        // 총 주문 금액 계산 후 금액 저장
         Double amount = order.calculateTotalAmount();
         // 주문 이름 추출
         String orderName = order.extractOrderName();
-
         // 주문 저장
         orderRepository.save(order);
 
