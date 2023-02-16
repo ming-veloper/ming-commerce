@@ -1,8 +1,12 @@
 package com.ming.mingcommerce.payment.model;
 
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PaymentApprovalRequest {
     private String paymentKey;
     private Double amount;

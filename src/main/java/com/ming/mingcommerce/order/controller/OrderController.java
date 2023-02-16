@@ -7,13 +7,11 @@ import com.ming.mingcommerce.order.service.OrderService;
 import com.ming.mingcommerce.security.CurrentMember;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +25,7 @@ public class OrderController {
      *
      * @param authentication
      * @param orderRequest
-     * @return
+     * @return orderId, amount, orderName
      */
     @PostMapping("/order")
     public ResponseEntity<?> order(Authentication authentication, @RequestBody OrderRequest orderRequest) {
@@ -38,5 +36,21 @@ public class OrderController {
         OrderResponse orderResponse = orderService.order(member, orderRequest);
 
         return new ResponseEntity<>(orderResponse, HttpStatus.OK);
+    }
+
+    /**
+     * 주문 조회
+     *
+     * @param authentication
+     * @param orderId
+     * @return orderId, amount, orderName
+     */
+    @GetMapping("/order")
+    public ResponseEntity<?> getOrder(Authentication authentication, @Param("orderId") String orderId) {
+        if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
+            throw new IllegalArgumentException();
+        }
+        OrderResponse response = orderService.getOrder(orderId, currentMember);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

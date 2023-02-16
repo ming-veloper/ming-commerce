@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,45 +28,39 @@ public class Order extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.PENDING; // default
+
+    // 주문 이름
+    private String orderName;
     @ElementCollection
     @OrderColumn(name = "line_idx")
     @CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_id"))
     private List<OrderLine> orderLineList;
-
     private Double totalAmount; // 총 주문 금액
 
-    public static Order create(Member member) {
+    public static Order create(Member member, List<OrderLine> orderLines) {
+        Double totalAmount = calculateTotalAmount(orderLines);
+        String orderName = extractOrderName(orderLines);
         return Order.builder()
                 .member(member)
                 .orderStatus(OrderStatus.PENDING)
-                .orderLineList(new ArrayList<>())
+                .totalAmount(totalAmount)
+                .orderName(orderName)
+                .orderLineList(orderLines)
                 .build();
     }
 
-    public void addOrderLine(OrderLine orderLine) {
-        getOrderLineList().add(orderLine);
-    }
-
-    public Double calculateTotalAmount() {
-        Double totalAmount = orderLineList.stream()
+    public static Double calculateTotalAmount(List<OrderLine> orderLines) {
+        return orderLines.stream()
                 .mapToDouble(orderLine -> orderLine.calculatePrice() * 1000)
                 .sum();
-        // 총 주문 금액 세팅
-        setTotalAmount(totalAmount);
-        return totalAmount;
     }
 
-    private void setTotalAmount(Double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public String extractOrderName() {
-        var firstProductName = getOrderLineList().get(0).getProductName();
+    public static String extractOrderName(List<OrderLine> orderLines) {
+        var firstProductName = orderLines.get(0).getProductName();
         String shortenFirstProductName = firstProductName.substring(0, firstProductName.length() / 2) + "...";
-        return getOrderLineList().size() > 1 ?
-                shortenFirstProductName + " 외 " + getOrderLineList().size() + "건" :
+        return orderLines.size() > 1 ?
+                shortenFirstProductName + " 외 " + orderLines.size() + "건" :
                 shortenFirstProductName;
-
     }
 
     public void validateAmount(Double payRequestAmount) {
@@ -76,7 +69,7 @@ public class Order extends BaseTimeEntity {
         }
     }
 
-    public void successPay() {
+    public void completePay() {
         this.orderStatus = OrderStatus.COMPLETE;
     }
 }

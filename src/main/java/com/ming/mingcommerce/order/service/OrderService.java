@@ -8,11 +8,14 @@ import com.ming.mingcommerce.order.model.OrderRequest;
 import com.ming.mingcommerce.order.model.OrderResponse;
 import com.ming.mingcommerce.order.respository.OrderRepository;
 import com.ming.mingcommerce.order.vo.OrderLine;
+import com.ming.mingcommerce.security.CurrentMember;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,30 +23,46 @@ import java.util.List;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
+    private final ModelMapper modelMapper;
 
     /**
      * 주문(Order) 과 주문 라인(OrderLine)을 생성하여 저장한 뒤 주문 id 와 총 주문 금액을 반환한다.
      *
      * @param member
      * @param orderRequest
-     * @return
+     * @return orderId, amount, orderName
      */
     @Transactional
     public OrderResponse order(Member member, OrderRequest orderRequest) {
-        // 주문 생성
-        Order order = Order.create(member);
 
         // 주문 라인 생성
-        List<CartLineDTO> cartLineDTOList = cartRepository.getCartLineDTO(orderRequest.getCartLineUuidList());
-        cartLineDTOList.stream().map(OrderLine::create).forEach(order::addOrderLine);
-
-        // 총 주문 금액 계산 후 금액 저장
-        Double amount = order.calculateTotalAmount();
-        // 주문 이름 추출
-        String orderName = order.extractOrderName();
+        List<OrderLine> orderLines = createOrderLines(orderRequest.getCartLineUuidList());
+        // 주문 생성
+        Order order = Order.create(member, orderLines);
         // 주문 저장
         orderRepository.save(order);
 
-        return new OrderResponse(order.getOrderId(), amount, orderName);
+        return new OrderResponse(order.getOrderId(), order.getTotalAmount(), order.getOrderName(), order.getOrderStatus());
+    }
+
+    private List<OrderLine> createOrderLines(List<String> cartLineUuidList) {
+        List<CartLineDTO> cartLineDTOList = cartRepository.getCartLineDTO(cartLineUuidList);
+        return cartLineDTOList.stream().map(OrderLine::create).toList();
+    }
+
+    // 주문 조회시 해당 주문 조회 권한이 있는 요청인지 검증
+    private void validate(CurrentMember currentMember, String orderId) {
+        Order order = orderRepository.findOrderByOrderId(orderId);
+        if (!Objects.equals(order.getMember().getEmail(), currentMember.getEmail())) {
+            throw new IllegalArgumentException("해당 주문을 조회할 수 있는 사용자가 아닙니다.");
+        }
+    }
+
+    // 주문 조회
+    public OrderResponse getOrder(String orderId, CurrentMember currentMember) {
+        // 현재 요청의 사용자가 해당 주문을 조회할 수 있는지 검증
+        validate(currentMember, orderId);
+        Order order = orderRepository.findOrderByOrderId(orderId);
+        return modelMapper.map(order, OrderResponse.class);
     }
 }
