@@ -43,7 +43,7 @@ public interface CartRepository extends JpaRepository<Cart, String> {
 
     @Query("""
             SELECT new com.ming.mingcommerce.cart.model.CartLineDTO(
-                cl.uuid ,cl.quantity, cl.price, p.productName
+                cl.uuid ,cl.quantity, cl.price, p.productName, cl.deleted
             )
             FROM Cart c
             JOIN c.cartLines cl
@@ -52,5 +52,13 @@ public interface CartRepository extends JpaRepository<Cart, String> {
                 WHERE cl.uuid IN (:cartLineUuidList)
             """)
     List<CartLineDTO> getCartLineDTO(@Param("cartLineUuidList") List<String> cartLineUuidList);
+
+    @Query("""
+            SELECT cl.deleted
+            FROM Cart c
+            JOIN c.cartLines cl
+                WHERE cl.uuid IN (:cartLineUuidList)
+            """)
+    List<Boolean> isCartLineUuidDeleted(@Param("cartLineUuidList") List<String> cartLineUuidList);
 
 }

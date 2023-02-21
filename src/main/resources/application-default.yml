@@ -20,3 +20,7 @@ jwt:
 admin:
   email: admin@ming.com
   password: 1234
+
+toss:
+  payments:
+    secret-key: ${TOSS_SECRET_KEY}

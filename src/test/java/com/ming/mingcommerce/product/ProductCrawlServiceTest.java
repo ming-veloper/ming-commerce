@@ -16,7 +16,6 @@ import java.util.Map;
 
 @SpringBootTest
 @ActiveProfiles("test")
-
 class ProductCrawlServiceTest {
     @MockBean
     ProductCrawlService productCrawlService;

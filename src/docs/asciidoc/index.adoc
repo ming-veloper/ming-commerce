@@ -94,3 +94,18 @@ operation::delete-cart-product[]
 CartLine 의 고유 id인 uuid 로 장바구니 안의 상품을 선택하여 주문할 수 있다.
 
 operation::order[]
+
+=== 주문 조회하기
+
+주문 ID 를 쿼리 파라미터로 하여 주문을 조회한다.
+해당 주문 조회에 권한이 있는 사용자만 조회가 가능하다.
+
+operation::get-order-by-id[]
+
+== Payment
+
+=== 결제 승인 (토스 결제)
+
+결제 요청 검증 후 결제를 승인한다.
+
+operation::payment-approval[]

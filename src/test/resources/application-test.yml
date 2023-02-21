@@ -1,4 +1,3 @@
-
 spring:
   datasource:
     driver-class-name: org.h2.Driver
@@ -23,3 +22,7 @@ jwt:
 admin:
   email: admin@ming.com
   password: 1234
+
+toss:
+  payments:
+    secret-key: toss-test-secret-key

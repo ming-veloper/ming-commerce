@@ -39,6 +39,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/members/email-duplication-check").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        // API document
+                        .requestMatchers(HttpMethod.GET, "/docs/**").permitAll()
                         // Only for ADMIN
                         .requestMatchers("/api/product-crawl").hasRole("ADMIN")
                         .anyRequest().authenticated()
