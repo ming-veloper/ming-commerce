@@ -28,13 +28,14 @@ public class Order extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.PENDING; // default
-
     // 주문 이름
     private String orderName;
+
     @ElementCollection
     @OrderColumn(name = "line_idx")
     @CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_id"))
     private List<OrderLine> orderLineList;
+
     private Double totalAmount; // 총 주문 금액
 
     public static Order create(Member member, List<OrderLine> orderLines) {
