@@ -15,7 +15,6 @@ import com.ming.mingcommerce.payment.repository.PaymentHistoryRepository;
 import com.ming.mingcommerce.security.CurrentMember;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,22 +28,18 @@ public class TossPaymentService implements PaymentService {
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final CartRepository cartRepository;
     private final PaymentApprovalApi tossPaymentApprovalApi;
-    private final Environment env;
     private final ModelMapper modelMapper;
 
     @Override
     @Transactional
     public PaymentApprovalResponse pay(PaymentApprovalRequest request, CurrentMember currentMember) throws JsonProcessingException {
         validateAmount(request);
-        String secretKey = env.getProperty("toss.payments.secret-key");
-        PaymentApprovalResponse response = tossPaymentApprovalApi.processPay(request, secretKey);
+        PaymentApprovalResponse response = tossPaymentApprovalApi.processPay(request);
         // 결제 히스토리 저장
         savePaymentHistory(response);
-
         Order order = orderRepository.findOrderByOrderId(response.getOrderId());
         // 주문 상태 바꾸기 PENDING -> COMPLETE
         successPay(order, currentMember);
-
         return response;
     }
 

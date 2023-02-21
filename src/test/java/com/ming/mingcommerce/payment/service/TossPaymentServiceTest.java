@@ -29,7 +29,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 class TossPaymentServiceTest extends BaseServiceTest {
@@ -69,7 +68,7 @@ class TossPaymentServiceTest extends BaseServiceTest {
                 "testOrder",
                 "2023-02-21", "2023-02-21",
                 "KRW", amount, "카드");
-        when(paymentApprovalApi.processPay(any(PaymentApprovalRequest.class), anyString())).thenReturn(response);
+        when(paymentApprovalApi.processPay(any(PaymentApprovalRequest.class))).thenReturn(response);
         // when
         paymentService.pay(request, currentMember);
         // then

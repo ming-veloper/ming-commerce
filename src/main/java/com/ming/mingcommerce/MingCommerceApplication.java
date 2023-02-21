@@ -10,4 +10,5 @@ public class MingCommerceApplication {
         SpringApplication.run(MingCommerceApplication.class, args);
     }
 
+
 }

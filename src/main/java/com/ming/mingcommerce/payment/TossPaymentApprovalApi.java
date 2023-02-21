@@ -17,13 +17,13 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class TossPaymentApprovalApi implements PaymentApprovalApi {
     private final ObjectMapper objectMapper;
+    private final String tossSecretKey;
 
     @Override
-    public PaymentApprovalResponse processPay(PaymentApprovalRequest request, String secretKey) throws JsonProcessingException {
-        secretKey += ":";
+    public PaymentApprovalResponse processPay(PaymentApprovalRequest request) throws JsonProcessingException {
         // 헤더
         HttpHeaders headers = new HttpHeaders();
-        String header = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        String header = Base64.getEncoder().encodeToString(tossSecretKey.getBytes());
         headers.setBasicAuth(header);
         headers.setContentType(MediaType.APPLICATION_JSON);
         // 데이터
