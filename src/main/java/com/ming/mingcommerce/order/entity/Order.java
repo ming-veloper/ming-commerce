@@ -50,15 +50,17 @@ public class Order extends BaseTimeEntity {
                 .build();
     }
 
-    public static Double calculateTotalAmount(List<OrderLine> orderLines) {
+    private static Double calculateTotalAmount(List<OrderLine> orderLines) {
         return orderLines.stream()
                 .mapToDouble(orderLine -> orderLine.calculatePrice() * 1000)
                 .sum();
     }
 
-    public static String extractOrderName(List<OrderLine> orderLines) {
+    private static String extractOrderName(List<OrderLine> orderLines) {
         var firstProductName = orderLines.get(0).getProductName();
-        String shortenFirstProductName = firstProductName.substring(0, firstProductName.length() / 2) + "...";
+        // 주문 이름 100자 이하로 만들기
+        if (firstProductName.length() > 100) firstProductName = firstProductName.substring(0, 90);
+        String shortenFirstProductName = firstProductName + "...";
         return orderLines.size() > 1 ?
                 shortenFirstProductName + " 외 " + orderLines.size() + "건" :
                 shortenFirstProductName;
