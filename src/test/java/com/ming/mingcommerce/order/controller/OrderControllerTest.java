@@ -1,25 +1,35 @@
 package com.ming.mingcommerce.order.controller;
 
 import com.ming.mingcommerce.BaseControllerTest;
+import com.ming.mingcommerce.cart.entity.Cart;
 import com.ming.mingcommerce.cart.model.CartProductDTO;
 import com.ming.mingcommerce.cart.model.CartProductRequest;
 import com.ming.mingcommerce.cart.repository.CartRepository;
 import com.ming.mingcommerce.cart.service.CartService;
+import com.ming.mingcommerce.cart.vo.CartLine;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.order.entity.Order;
 import com.ming.mingcommerce.order.model.OrderRequest;
+import com.ming.mingcommerce.order.model.OrderResponse;
 import com.ming.mingcommerce.order.respository.OrderRepository;
 import com.ming.mingcommerce.order.service.OrderService;
+import com.ming.mingcommerce.payment.PaymentApprovalApi;
+import com.ming.mingcommerce.payment.model.PaymentApprovalRequest;
+import com.ming.mingcommerce.payment.model.PaymentApprovalResponse;
+import com.ming.mingcommerce.payment.service.PaymentService;
 import com.ming.mingcommerce.product.entity.Product;
 import com.ming.mingcommerce.security.CurrentMember;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -33,11 +43,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class OrderControllerTest extends BaseControllerTest {
 
+    @MockBean
+    PaymentApprovalApi paymentApprovalApi;
+
     @Autowired
     OrderService orderService;
 
     @Autowired
     CartService cartService;
+
+    @Autowired
+    PaymentService paymentService;
 
     @Autowired
     CartRepository cartRepository;
@@ -58,8 +74,8 @@ class OrderControllerTest extends BaseControllerTest {
     void order() throws Exception {
         Member member = saveMember();
         List<Product> products = saveProduct();
-        OrderRequest orderRequests = putInCart(products, member);
-        String content = objectMapper.writeValueAsString(orderRequests);
+        OrderRequest orderRequest = putInCart(products, member);
+        String content = objectMapper.writeValueAsString(orderRequest);
 
         String token = jwtTokenUtil.issueToken(member).getAccessToken();
         mockMvc.perform(post("/api/orders/order")
@@ -116,6 +132,58 @@ class OrderControllerTest extends BaseControllerTest {
 
 
         ;
+    }
+
+    @Test
+    @DisplayName("주문 상세를 조회한다")
+    void orderDetail() throws Exception {
+        // given
+        // 상품과 멤버 저장 후 카트에 상품을 담아 주문한다
+        Member member = saveMember();
+        List<Product> products = saveProduct();
+        Cart cart = new Cart("test-cart-id", List.of(CartLine.createCartLine(products.get(0), 10L)), member);
+        cartRepository.save(cart);
+
+        OrderResponse orderResponse = orderService.order(member, new OrderRequest(List.of(cart.getCartLines().get(0).getUuid())));
+        String orderId = orderResponse.getOrderId();
+        Double amount = orderResponse.getAmount();
+        PaymentApprovalRequest request = PaymentApprovalRequest.builder()
+                .paymentKey("test-payment-key")
+                .amount(amount)
+                .orderId(orderId).build();
+        PaymentApprovalResponse response = new PaymentApprovalResponse(orderId,
+                "testOrder",
+                "2023-02-21", "2023-02-21",
+                "KRW", amount, "카드");
+        when(paymentApprovalApi.processPay(any(PaymentApprovalRequest.class))).thenReturn(response);
+        // when
+        paymentService.pay(request, modelMapper.map(member, CurrentMember.class));
+
+        mockMvc.perform(get("/api/orders/order-detail")
+                .queryParam("orderId", orderResponse.getOrderId())
+                .header(X_WWW_MING_AUTHORIZATION, jwtTokenUtil.issueToken(member).getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].productId").exists())
+                .andExpect(jsonPath("$[*].productName").exists())
+                .andExpect(jsonPath("$[*].thumbnailImageUrl").exists())
+                .andExpect(jsonPath("$[*].price").exists())
+                .andExpect(jsonPath("$[*].quantity").exists())
+                .andDo(document("get-order-detail",
+                        requestHeaders(
+                                headerWithName(X_WWW_MING_AUTHORIZATION).description("인증 헤더")
+                        ),
+                        queryParameters(
+                                parameterWithName("orderId").description("주문 아이디")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].productId").description("상품 아이디"),
+                                fieldWithPath("[].productName").description("상품명"),
+                                fieldWithPath("[].thumbnailImageUrl").description("상품 썸네일 URL"),
+                                fieldWithPath("[].price").description("상품 가격"),
+                                fieldWithPath("[].quantity").description("상품 주문 수량")
+                        )
+                ))
+                ;
     }
 
     // 인자로 주어진 상품 리스트를 장바구니에 담는다
