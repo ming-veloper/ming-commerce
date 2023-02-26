@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CartLineDTO {
     private String uuid;
+    private String productId;
     private Long quantity;
     private Double price;
     private String productName;

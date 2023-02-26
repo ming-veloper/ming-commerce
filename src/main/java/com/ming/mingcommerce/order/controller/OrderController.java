@@ -1,6 +1,7 @@
 package com.ming.mingcommerce.order.controller;
 
 import com.ming.mingcommerce.member.entity.Member;
+import com.ming.mingcommerce.order.model.OrderDetail;
 import com.ming.mingcommerce.order.model.OrderRequest;
 import com.ming.mingcommerce.order.model.OrderResponse;
 import com.ming.mingcommerce.order.service.OrderService;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class OrderController {
      *
      * @param authentication
      * @param orderRequest
-     * @return orderId, amount, orderName
+     * @return orderResponse
      */
     @PostMapping("/order")
     public ResponseEntity<?> order(Authentication authentication, @RequestBody OrderRequest orderRequest) {
@@ -43,7 +46,7 @@ public class OrderController {
      *
      * @param authentication
      * @param orderId
-     * @return orderId, amount, orderName
+     * @return orderResponse
      */
     @GetMapping("/order")
     public ResponseEntity<?> getOrder(Authentication authentication, @Param("orderId") String orderId) {
@@ -52,5 +55,22 @@ public class OrderController {
         }
         OrderResponse response = orderService.getOrder(orderId, currentMember);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * 주문 상세를 조회한다
+     *
+     * @param authentication
+     * @param orderId
+     * @return orderDetail
+     */
+    @GetMapping("/order-detail")
+    public ResponseEntity<?> getOrderDetail(Authentication authentication, @Param("orderId") String orderId) {
+        if (!((authentication.getPrincipal()) instanceof CurrentMember currentMember)) {
+            throw new IllegalArgumentException();
+        }
+        List<OrderDetail> result = orderService.getOrderDetail(orderId, currentMember);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

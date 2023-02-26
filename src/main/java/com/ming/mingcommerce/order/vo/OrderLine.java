@@ -10,12 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderLine {
     private String cartLineUuid;
+    private String productId;
     private Double price;
     private Long quantity;
     private String productName;
 
     public OrderLine(CartLineDTO cartLine) {
         this.cartLineUuid = cartLine.getUuid();
+        this.productId = cartLine.getProductId();
         this.price = cartLine.getPrice();
         this.quantity = cartLine.getQuantity();
         this.productName = cartLine.getProductName();
