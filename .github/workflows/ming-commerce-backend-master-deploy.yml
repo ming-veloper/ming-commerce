@@ -2,7 +2,7 @@ name: ming-commerce-backend-master-deploy
 
 on:
   push:
-    branched:
+    branches:
       - master
 
 jobs:
