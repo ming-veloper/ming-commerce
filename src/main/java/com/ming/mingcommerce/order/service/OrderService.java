@@ -67,10 +67,18 @@ public class OrderService {
         return modelMapper.map(order, OrderResponse.class);
     }
 
-    // 주문 상세 조회
+    // orderId 에 해당하는 주문 상세 조회
     public List<OrderDetail> getOrderDetail(String orderId, CurrentMember currentMember) {
         // 현재 요청의 사용자가 해당 주문을 조회할 수 있는지 검증
         validate(currentMember, orderId);
         return orderRepository.getOrderDetail(orderId);
+    }
+
+    // 사용자 주문 조회. 최대 5개의 최신 주문을 조회한다.
+    public List<OrderResponse> getMyOrder(CurrentMember currentMember) {
+        // Member 엔티티 타입으로 형변환
+        Member member = modelMapper.map(currentMember, Member.class);
+        List<Order> orders = orderRepository.findTop5ByMemberOrderByCreatedDateDesc(member);
+        return orders.stream().map(order -> modelMapper.map(order, OrderResponse.class)).toList();
     }
 }

@@ -1,5 +1,6 @@
 package com.ming.mingcommerce.order.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ming.mingcommerce.BaseControllerTest;
 import com.ming.mingcommerce.cart.entity.Cart;
 import com.ming.mingcommerce.cart.model.CartProductDTO;
@@ -138,30 +139,12 @@ class OrderControllerTest extends BaseControllerTest {
     @DisplayName("주문 상세를 조회한다")
     void orderDetail() throws Exception {
         // given
-        // 상품과 멤버 저장 후 카트에 상품을 담아 주문한다
         Member member = saveMember();
-        List<Product> products = saveProduct();
-        Cart cart = new Cart("test-cart-id", List.of(CartLine.createCartLine(products.get(0), 10L)), member);
-        cartRepository.save(cart);
-
-        OrderResponse orderResponse = orderService.order(member, new OrderRequest(List.of(cart.getCartLines().get(0).getUuid())));
-        String orderId = orderResponse.getOrderId();
-        Double amount = orderResponse.getAmount();
-        PaymentApprovalRequest request = PaymentApprovalRequest.builder()
-                .paymentKey("test-payment-key")
-                .amount(amount)
-                .orderId(orderId).build();
-        PaymentApprovalResponse response = new PaymentApprovalResponse(orderId,
-                "testOrder",
-                "2023-02-21", "2023-02-21",
-                "KRW", amount, "카드");
-        when(paymentApprovalApi.processPay(any(PaymentApprovalRequest.class))).thenReturn(response);
-        // when
-        paymentService.pay(request, modelMapper.map(member, CurrentMember.class));
+        OrderResponse orderResponse = orderAndPay(member);
 
         mockMvc.perform(get("/api/orders/order-detail")
-                .queryParam("orderId", orderResponse.getOrderId())
-                .header(X_WWW_MING_AUTHORIZATION, jwtTokenUtil.issueToken(member).getAccessToken()))
+                        .queryParam("orderId", orderResponse.getOrderId())
+                        .header(X_WWW_MING_AUTHORIZATION, jwtTokenUtil.issueToken(member).getAccessToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].productId").exists())
                 .andExpect(jsonPath("$[*].productName").exists())
@@ -183,7 +166,35 @@ class OrderControllerTest extends BaseControllerTest {
                                 fieldWithPath("[].quantity").description("상품 주문 수량")
                         )
                 ))
-                ;
+        ;
+    }
+
+    @Test
+    @DisplayName("사용자의 주문을 조회한다")
+    public void myOrder() throws Exception {
+        Member member = saveMember();
+        orderAndPay(member);
+
+        mockMvc.perform(get("/api/orders/my-order")
+                        .header(X_WWW_MING_AUTHORIZATION, jwtTokenUtil.issueToken(member).getAccessToken())
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].orderId").exists())
+                .andExpect(jsonPath("$[*].amount").exists())
+                .andExpect(jsonPath("$[*].orderName").exists())
+                .andExpect(jsonPath("$[*].orderStatus").exists())
+                .andDo(document("get-my-order",
+                        requestHeaders(
+                                headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].orderId").description("주문 아이디"),
+                                fieldWithPath("[].amount").description("총 결제 금액"),
+                                fieldWithPath("[].orderName").description("주문 이름"),
+                                fieldWithPath("[].orderStatus").description("주문 상태")
+                        )
+                ))
+        ;
     }
 
     // 인자로 주어진 상품 리스트를 장바구니에 담는다
@@ -205,4 +216,28 @@ class OrderControllerTest extends BaseControllerTest {
         return orderRequest;
     }
 
+    private OrderResponse orderAndPay(Member member) throws JsonProcessingException {
+        // 상품과 멤버 저장 후 카트에 상품을 담아 주문한다
+        List<Product> products = saveProduct();
+        Cart cart = new Cart("test-cart-id", List.of(CartLine.createCartLine(products.get(0), 10L)), member);
+        cartRepository.save(cart);
+
+        OrderResponse orderResponse = orderService.order(member, new OrderRequest(List.of(cart.getCartLines().get(0).getUuid())));
+        String orderId = orderResponse.getOrderId();
+        Double amount = orderResponse.getAmount();
+        PaymentApprovalRequest request = PaymentApprovalRequest.builder()
+                .paymentKey("test-payment-key")
+                .amount(amount)
+                .orderId(orderId).build();
+        PaymentApprovalResponse response = new PaymentApprovalResponse(orderId,
+                "testOrder",
+                "2023-02-21", "2023-02-21",
+                "KRW", amount, "카드");
+        when(paymentApprovalApi.processPay(any(PaymentApprovalRequest.class))).thenReturn(response);
+        // when
+        paymentService.pay(request, modelMapper.map(member, CurrentMember.class));
+
+        return orderResponse;
+
+    }
 }
