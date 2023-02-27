@@ -1,5 +1,6 @@
 package com.ming.mingcommerce.order.respository;
 
+import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.order.entity.Order;
 import com.ming.mingcommerce.order.model.OrderDetail;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,4 +27,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                     """
     )
     List<OrderDetail> getOrderDetail(String orderId);
+
+    List<Order> findTop5ByMemberOrderByCreatedDateDesc(Member member);
 }

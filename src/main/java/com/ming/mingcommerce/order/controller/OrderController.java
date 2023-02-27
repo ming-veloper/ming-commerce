@@ -42,7 +42,7 @@ public class OrderController {
     }
 
     /**
-     * 주문 조회
+     * 주문 아이디에 해당하는 주문을 조회한다.
      *
      * @param authentication
      * @param orderId
@@ -56,6 +56,23 @@ public class OrderController {
         OrderResponse response = orderService.getOrder(orderId, currentMember);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    /**
+     * 사용자의 주문을 조회한다. 최신 주문이 가장 위에 나온다.
+     *
+     * @param authentication
+     * @return orderId, amount, orderName, orderStatus 로 이루어진 주문 조회 객체
+     */
+    @GetMapping("/my-order")
+    public ResponseEntity<?> getMyOrder(Authentication authentication) {
+        if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
+            throw new IllegalArgumentException();
+        }
+        List<OrderResponse> myOrders = orderService.getMyOrder(currentMember);
+
+        return new ResponseEntity<>(myOrders, HttpStatus.OK);
+    }
+
 
     /**
      * 주문 상세를 조회한다
