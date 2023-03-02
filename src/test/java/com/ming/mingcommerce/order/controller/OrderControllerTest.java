@@ -96,7 +96,7 @@ class OrderControllerTest extends BaseControllerTest {
                                 fieldWithPath("orderId").description("주문 아이디"),
                                 fieldWithPath("amount").description("주문 총 합계"),
                                 fieldWithPath("orderName").description("'[상품이름]외 [주문상품개수]건' 형식의 주문 이름"),
-                                fieldWithPath("orderStatus").description("주문 상태. 주문 완료시 PENDING 이며, 결제까지 완료되면 COMPLETE 으로 바뀐다")
+                                fieldWithPath("thumbnailImageUrl").description("주문 썸네일 이미지 URL. 사용자 주문 조회 요청이 아닐 시 null 값이다.")
                         )
 
                 ))
@@ -104,7 +104,7 @@ class OrderControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("주문을 조회한다")
+    @DisplayName("주문 아이디에 해당하는 주문을 조회한다")
     void getOrderById() throws Exception {
         Member member = saveMember();
         String orderName = "테스트 상품 외 1건";
@@ -127,7 +127,7 @@ class OrderControllerTest extends BaseControllerTest {
                                 fieldWithPath("orderId").description("주문 ID"),
                                 fieldWithPath("orderName").description("주문 이름. 2건 이상시 첫번째 상품 이름에 '외 n 건' 을 붙여 저장한다"),
                                 fieldWithPath("amount").description("총 결제 금액"),
-                                fieldWithPath("orderStatus").description("주문 상태. 주문 완료시 PENDING 이며, 결제까지 완료되면 COMPLETE 으로 바뀐다")
+                                fieldWithPath("thumbnailImageUrl").description("주문 썸네일 이미지 URL. 사용자 주문 조회 요청이 아닐 시 null 값이다.")
                         )
                 ))
 
@@ -177,12 +177,14 @@ class OrderControllerTest extends BaseControllerTest {
 
         mockMvc.perform(get("/api/orders/my-order")
                         .header(X_WWW_MING_AUTHORIZATION, jwtTokenUtil.issueToken(member).getAccessToken())
+                        .queryParam("page", "0")
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].orderId").exists())
                 .andExpect(jsonPath("$[*].amount").exists())
                 .andExpect(jsonPath("$[*].orderName").exists())
-                .andExpect(jsonPath("$[*].orderStatus").exists())
+                .andExpect(jsonPath("$[*].thumbnailImageUrl").exists())
+
                 .andDo(document("get-my-order",
                         requestHeaders(
                                 headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")
@@ -191,7 +193,8 @@ class OrderControllerTest extends BaseControllerTest {
                                 fieldWithPath("[].orderId").description("주문 아이디"),
                                 fieldWithPath("[].amount").description("총 결제 금액"),
                                 fieldWithPath("[].orderName").description("주문 이름"),
-                                fieldWithPath("[].orderStatus").description("주문 상태")
+                                fieldWithPath("[].thumbnailImageUrl").description("주문 썸네일 이미지 URL")
+
                         )
                 ))
         ;

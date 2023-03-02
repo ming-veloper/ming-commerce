@@ -3,7 +3,9 @@ package com.ming.mingcommerce.order.respository;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.order.entity.Order;
 import com.ming.mingcommerce.order.model.OrderDetail;
+import com.ming.mingcommerce.order.model.OrderResponse;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -28,5 +30,17 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     )
     List<OrderDetail> getOrderDetail(String orderId);
 
-    List<Order> findTop5ByMemberOrderByCreatedDateDesc(Member member);
+    @Query(
+            """
+                    SELECT new com.ming.mingcommerce.order.model.OrderResponse(
+                        o.orderId, o.totalAmount, o.orderName, p.thumbnailImageUrl
+                    )
+                    FROM Order o
+                    JOIN Product p
+                    JOIN o.orderLineList ol
+                        ON o.member = :member
+                        WHERE ol.productId = p.productId AND o.orderStatus = "COMPLETE"
+                    """
+    )
+    List<OrderResponse> getMyOrder(Member member, Pageable pageable);
 }

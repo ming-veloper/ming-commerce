@@ -64,11 +64,11 @@ public class OrderController {
      * @return orderId, amount, orderName, orderStatus 로 이루어진 주문 조회 객체
      */
     @GetMapping("/my-order")
-    public ResponseEntity<?> getMyOrder(Authentication authentication) {
+    public ResponseEntity<?> getMyOrder(Authentication authentication, @RequestParam("page") int page) {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        List<OrderResponse> myOrders = orderService.getMyOrder(currentMember);
+        List<OrderResponse> myOrders = orderService.getMyOrder(currentMember, page);
 
         return new ResponseEntity<>(myOrders, HttpStatus.OK);
     }

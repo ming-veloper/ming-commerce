@@ -12,6 +12,8 @@ import com.ming.mingcommerce.order.vo.OrderLine;
 import com.ming.mingcommerce.security.CurrentMember;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +45,7 @@ public class OrderService {
         // 주문 저장
         orderRepository.save(order);
 
-        return new OrderResponse(order.getOrderId(), order.getTotalAmount(), order.getOrderName(), order.getOrderStatus());
+        return new OrderResponse(order.getOrderId(), order.getTotalAmount(), order.getOrderName(), null);
     }
 
     private List<OrderLine> createOrderLines(List<String> cartLineUuidList) {
@@ -75,10 +77,11 @@ public class OrderService {
     }
 
     // 사용자 주문 조회. 최대 5개의 최신 주문을 조회한다.
-    public List<OrderResponse> getMyOrder(CurrentMember currentMember) {
+    public List<OrderResponse> getMyOrder(CurrentMember currentMember, int page) {
         // Member 엔티티 타입으로 형변환
         Member member = modelMapper.map(currentMember, Member.class);
-        List<Order> orders = orderRepository.findTop5ByMemberOrderByCreatedDateDesc(member);
-        return orders.stream().map(order -> modelMapper.map(order, OrderResponse.class)).toList();
+        Pageable pageable = PageRequest.of(page, 5);
+
+        return orderRepository.getMyOrder(member, pageable);
     }
 }
