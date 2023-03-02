@@ -8,6 +8,7 @@ import com.ming.mingcommerce.order.service.OrderService;
 import com.ming.mingcommerce.security.CurrentMember;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,11 +65,11 @@ public class OrderController {
      * @return orderId, amount, orderName, orderStatus 로 이루어진 주문 조회 객체
      */
     @GetMapping("/my-order")
-    public ResponseEntity<?> getMyOrder(Authentication authentication) {
+    public ResponseEntity<?> getMyOrder(Authentication authentication, Pageable pageable) {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        List<OrderResponse> myOrders = orderService.getMyOrder(currentMember);
+        var myOrders = orderService.getMyOrder(currentMember, pageable);
 
         return new ResponseEntity<>(myOrders, HttpStatus.OK);
     }
