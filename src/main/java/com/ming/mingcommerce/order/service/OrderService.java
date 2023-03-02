@@ -4,6 +4,7 @@ import com.ming.mingcommerce.cart.model.CartLineDTO;
 import com.ming.mingcommerce.cart.repository.CartRepository;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.order.entity.Order;
+import com.ming.mingcommerce.order.model.MyOrderProjectionModel;
 import com.ming.mingcommerce.order.model.OrderDetail;
 import com.ming.mingcommerce.order.model.OrderRequest;
 import com.ming.mingcommerce.order.model.OrderResponse;
@@ -76,9 +77,9 @@ public class OrderService {
     }
 
     // 사용자 주문 조회. 최대 5개의 최신 주문을 조회한다.
-    public List<OrderResponse> getMyOrder(CurrentMember currentMember, Pageable pageable) {
+    public List<MyOrderProjectionModel> getMyOrder(CurrentMember currentMember, Pageable pageable) {
         // Member 엔티티 타입으로 형변환
         Member member = modelMapper.map(currentMember, Member.class);
-        return orderRepository.getMyOrder(member, pageable);
+        return orderRepository.getMyOrder(member.getUuid(), pageable);
     }
 }

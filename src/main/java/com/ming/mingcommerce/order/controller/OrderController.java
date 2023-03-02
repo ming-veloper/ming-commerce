@@ -69,7 +69,7 @@ public class OrderController {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        List<OrderResponse> myOrders = orderService.getMyOrder(currentMember, pageable);
+        var myOrders = orderService.getMyOrder(currentMember, pageable);
 
         return new ResponseEntity<>(myOrders, HttpStatus.OK);
     }

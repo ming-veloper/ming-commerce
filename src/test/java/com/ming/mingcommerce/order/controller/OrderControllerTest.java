@@ -181,7 +181,7 @@ class OrderControllerTest extends BaseControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].orderId").exists())
-                .andExpect(jsonPath("$[*].amount").exists())
+                .andExpect(jsonPath("$[*].totalAmount").exists())
                 .andExpect(jsonPath("$[*].orderName").exists())
                 .andExpect(jsonPath("$[*].thumbnailImageUrl").exists())
 
@@ -191,7 +191,7 @@ class OrderControllerTest extends BaseControllerTest {
                         ),
                         responseFields(
                                 fieldWithPath("[].orderId").description("주문 아이디"),
-                                fieldWithPath("[].amount").description("총 결제 금액"),
+                                fieldWithPath("[].totalAmount").description("총 결제 금액"),
                                 fieldWithPath("[].orderName").description("주문 이름"),
                                 fieldWithPath("[].thumbnailImageUrl").description("주문 썸네일 이미지 URL")
 
