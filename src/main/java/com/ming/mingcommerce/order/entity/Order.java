@@ -31,6 +31,9 @@ public class Order extends BaseTimeEntity {
     // 주문 이름
     private String orderName;
 
+    // 주문 대표 이미지 썸네일 URL. 첫번째 주문 상품의 이미지의 URL.
+    private String orderThumbnailUrl;
+
     @ElementCollection
     @OrderColumn(name = "line_idx")
     @CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_id"))
@@ -38,11 +41,12 @@ public class Order extends BaseTimeEntity {
 
     private Double totalAmount; // 총 주문 금액
 
-    public static Order create(Member member, List<OrderLine> orderLines) {
+    public static Order create(Member member, List<OrderLine> orderLines, String representProductImageUrl) {
         Double totalAmount = calculateTotalAmount(orderLines);
         String orderName = extractOrderName(orderLines);
         return Order.builder()
                 .member(member)
+                .orderThumbnailUrl(representProductImageUrl)
                 .orderStatus(OrderStatus.PENDING)
                 .totalAmount(totalAmount)
                 .orderName(orderName)
@@ -62,7 +66,7 @@ public class Order extends BaseTimeEntity {
         if (firstProductName.length() > 100) firstProductName = firstProductName.substring(0, 90);
         String shortenFirstProductName = firstProductName + "...";
         return orderLines.size() > 1 ?
-                shortenFirstProductName + " 외 " + orderLines.size() + "건" :
+                shortenFirstProductName + " 외 " + (orderLines.size() - 1) + "건" :
                 shortenFirstProductName;
     }
 

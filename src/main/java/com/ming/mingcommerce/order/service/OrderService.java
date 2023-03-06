@@ -40,12 +40,16 @@ public class OrderService {
 
         // 주문 라인 생성
         List<OrderLine> orderLines = createOrderLines(orderRequest.getCartLineUuidList());
+
+        // 주문 대표 이미지 가져오기
+        String firstCartLineUuid = orderRequest.extractFirstCartLineUuid();
+        String representProductImageUrl = cartRepository.getRepresentProductImageUrl(firstCartLineUuid);
         // 주문 생성
-        Order order = Order.create(member, orderLines);
+        Order order = Order.create(member, orderLines, representProductImageUrl);
         // 주문 저장
         orderRepository.save(order);
 
-        return new OrderResponse(order.getOrderId(), order.getTotalAmount(), order.getOrderName(), null);
+        return new OrderResponse(order.getOrderId(), order.getTotalAmount(), order.getOrderName(), orderRequest.extractFirstCartLineUuid());
     }
 
     private List<OrderLine> createOrderLines(List<String> cartLineUuidList) {
