@@ -22,7 +22,7 @@ public class OrderRequest {
 
     public String extractFirstCartLineUuid() {
         String s = cartLineUuidList.get(0);
-        if (!StringUtils.hasText(s)) throw new IllegalArgumentException();
+        if (!StringUtils.hasText(s)) throw new IllegalArgumentException("카트 상품 UUID 가 존재하지 않습니다.");
         return s;
     }
 }
