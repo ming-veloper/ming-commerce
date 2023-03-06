@@ -61,4 +61,13 @@ public interface CartRepository extends JpaRepository<Cart, String> {
             """)
     List<Boolean> isCartLineUuidDeleted(@Param("cartLineUuidList") List<String> cartLineUuidList);
 
+    @Query("""
+            SELECT p.thumbnailImageUrl
+            FROM Cart c
+            JOIN c.cartLines cl
+            JOIN Product p
+                ON p.productId = cl.productId
+                where cl.uuid = (:firstCartLineUuid)
+            """)
+    String getRepresentProductImageUrl(String firstCartLineUuid);
 }

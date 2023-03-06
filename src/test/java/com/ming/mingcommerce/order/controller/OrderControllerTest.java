@@ -86,6 +86,8 @@ class OrderControllerTest extends BaseControllerTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("orderId").exists())
                 .andExpect(jsonPath("amount").exists())
+                .andExpect(jsonPath("orderName").exists())
+                .andExpect(jsonPath("orderThumbnailUrl").exists())
                 .andDo(document("order",
                         requestHeaders(headerWithName(X_WWW_MING_AUTHORIZATION).description("인증 헤더")
                         ),
@@ -96,7 +98,7 @@ class OrderControllerTest extends BaseControllerTest {
                                 fieldWithPath("orderId").description("주문 아이디"),
                                 fieldWithPath("amount").description("주문 총 합계"),
                                 fieldWithPath("orderName").description("'[상품이름]외 [주문상품개수]건' 형식의 주문 이름"),
-                                fieldWithPath("thumbnailImageUrl").description("주문 썸네일 이미지 URL. 사용자 주문 조회 요청이 아닐 시 null 값이다.")
+                                fieldWithPath("orderThumbnailUrl").description("주문 썸네일 이미지 URL. 사용자 주문 조회 요청이 아닐 시 null 값이다.")
                         )
 
                 ))
@@ -127,7 +129,7 @@ class OrderControllerTest extends BaseControllerTest {
                                 fieldWithPath("orderId").description("주문 ID"),
                                 fieldWithPath("orderName").description("주문 이름. 2건 이상시 첫번째 상품 이름에 '외 n 건' 을 붙여 저장한다"),
                                 fieldWithPath("amount").description("총 결제 금액"),
-                                fieldWithPath("thumbnailImageUrl").description("주문 썸네일 이미지 URL. 사용자 주문 조회 요청이 아닐 시 null 값이다.")
+                                fieldWithPath("orderThumbnailUrl").description("주문 썸네일 이미지 URL. 사용자 주문 조회 요청이 아닐 시 null 값이다.")
                         )
                 ))
 

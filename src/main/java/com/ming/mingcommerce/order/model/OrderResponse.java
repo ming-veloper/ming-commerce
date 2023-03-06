@@ -11,5 +11,5 @@ public class OrderResponse {
     private String orderId;
     private Double amount;
     private String orderName;
-    private String thumbnailImageUrl;
+    private String orderThumbnailUrl;
 }

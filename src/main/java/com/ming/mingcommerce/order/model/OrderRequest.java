@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,5 +18,11 @@ public class OrderRequest {
 
     public void addCartLineUuid(List<String> uuidList) {
         cartLineUuidList.addAll(uuidList);
+    }
+
+    public String extractFirstCartLineUuid() {
+        String s = cartLineUuidList.get(0);
+        if (!StringUtils.hasText(s)) throw new IllegalArgumentException();
+        return s;
     }
 }
