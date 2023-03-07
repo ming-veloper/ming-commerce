@@ -4,6 +4,7 @@ import com.ming.mingcommerce.order.entity.Order;
 import com.ming.mingcommerce.order.model.MyOrderProjectionModel;
 import com.ming.mingcommerce.order.model.OrderDetail;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -67,8 +68,22 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                                                  FROM order_line ol
                                                  WHERE ol.order_id = po.order_id)
             WHERE po.order_status = 'COMPLETE'
-              AND po.member_uuid = :memberUuid""", nativeQuery = true)
-    List<MyOrderProjectionModel> getMyOrder(String memberUuid, Pageable pageable);
+              AND po.member_uuid = :memberUuid""", nativeQuery = true,
+            countQuery = """
+                    select count(*)
+                    FROM purchase_order po
+                             JOIN
+                         order_line ol
+                         ON po.order_id = ol.order_id
+                             JOIN
+                         product p
+                         ON p.product_id = ol.product_id
+                             AND ol.line_idx = (SELECT min(ol.line_idx)
+                                                FROM order_line ol
+                                                WHERE ol.order_id = po.order_id)
+                    WHERE po.order_status = 'COMPLETE'
+                      AND po.member_uuid = :memberUuid""")
+    Page<MyOrderProjectionModel> getMyOrder(String memberUuid, Pageable pageable);
 
 
 }
