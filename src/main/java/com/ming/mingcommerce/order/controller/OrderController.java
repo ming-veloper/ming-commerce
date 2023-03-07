@@ -70,7 +70,6 @@ public class OrderController {
             throw new IllegalArgumentException();
         }
         var myOrders = orderService.getMyOrder(currentMember, pageable);
-
         return new ResponseEntity<>(myOrders, HttpStatus.OK);
     }
 
@@ -88,7 +87,6 @@ public class OrderController {
             throw new IllegalArgumentException();
         }
         List<OrderDetail> result = orderService.getOrderDetail(orderId, currentMember);
-
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
