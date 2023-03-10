@@ -182,22 +182,25 @@ class OrderControllerTest extends BaseControllerTest {
                         .queryParam("page", "0")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*].orderId").exists())
-                .andExpect(jsonPath("$[*].amount").exists())
-                .andExpect(jsonPath("$[*].orderName").exists())
-                .andExpect(jsonPath("$[*].thumbnailUrl").exists())
-                .andExpect(jsonPath("$[*].updatedDate").exists())
+                .andExpect(jsonPath("totalPages").exists())
+                .andExpect(jsonPath("content").exists())
+                .andExpect(jsonPath("first").exists())
+                .andExpect(jsonPath("last").exists())
 
                 .andDo(document("get-my-order",
                         requestHeaders(
                                 headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")
                         ),
                         responseFields(
-                                fieldWithPath("[].orderId").description("주문 아이디"),
-                                fieldWithPath("[].amount").description("총 결제 금액"),
-                                fieldWithPath("[].orderName").description("주문 이름"),
-                                fieldWithPath("[].thumbnailUrl").description("주문 썸네일 이미지 URL"),
-                                fieldWithPath("[].updatedDate").description("주문 생성(또는 업데이트)일자")
+                                fieldWithPath("totalPages").description("총 페이지"),
+                                fieldWithPath("first").description("첫 번재 페이지인지 여부"),
+                                fieldWithPath("last").description("마지막 페이지인지 여부"),
+                                fieldWithPath("totalElements").description("총 주문 갯수"),
+                                fieldWithPath("content[].orderId").description("주문 아이디"),
+                                fieldWithPath("content[].amount").description("총 결제 금액"),
+                                fieldWithPath("content[].orderName").description("주문 이름"),
+                                fieldWithPath("content[].updatedDate").description("주문일시"),
+                                fieldWithPath("content[].thumbnailUrl").description("주문 썸네일 이미지 URL")
                         )
                 ))
         ;

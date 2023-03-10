@@ -4,6 +4,7 @@ import com.ming.mingcommerce.order.entity.Order;
 import com.ming.mingcommerce.order.model.MyOrderModel;
 import com.ming.mingcommerce.order.model.OrderDetail;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -42,12 +43,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      *         }
      *     }
      * </pre>
-     * 주문 상품들 중에서 제일 첫 번째 주문 상품의 상품 이미지를 주문 대표 이미지로 설정해야 합니다.
-     * (사용자 주문 목록 조회에 노출하기 위한.)
-     * <p>
-     * 이를 위해서는 JPA 를 사용하는 것 보다는 NativeQuery 를 사용하는것이 적당하다고 판단되어 해당 메소드에 적용하였습니다.
-     * <p>
-     * 또한 네이티브 쿼리를 사용하게 되면 기존의 DTO 로 취급하던 클래스 객체로는 프로젝션이 불가능하기 때문에 규약에 따라 인터페이스를 정의하여 사용하였습니다.
+     * 주문아이디, 주문이름, 주문총금액, 주문썸네일, 주문일자를 반환합니다.
      *
      * @param memberUuid 사용자의 uuid 입니다.
      * @param pageable   페이징 객체를 처리하기 위한 객체입니다.
@@ -61,7 +57,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                         WHERE o.member.uuid = :memberUuid
                     """
     )
-    List<MyOrderModel> getMyOrder(String memberUuid, Pageable pageable);
+    Page<MyOrderModel> getMyOrder(String memberUuid, Pageable pageable);
 
 
 }

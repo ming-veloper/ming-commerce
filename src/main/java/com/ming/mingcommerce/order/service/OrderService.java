@@ -11,6 +11,7 @@ import com.ming.mingcommerce.order.model.OrderResponse;
 import com.ming.mingcommerce.order.respository.OrderRepository;
 import com.ming.mingcommerce.order.vo.OrderLine;
 import com.ming.mingcommerce.security.CurrentMember;
+import com.ming.mingcommerce.util.PagingObject;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -81,9 +82,7 @@ public class OrderService {
     }
 
     // 사용자의 전체 주문 조회
-    public List<MyOrderModel> getMyOrder(CurrentMember currentMember, Pageable pageable) {
-        // Member 엔티티 타입으로 형변환
-        Member member = modelMapper.map(currentMember, Member.class);
-        return orderRepository.getMyOrder(member.getUuid(), pageable);
+    public PagingObject<MyOrderModel> getMyOrder(CurrentMember currentMember, Pageable pageable) {
+        return PagingObject.of(orderRepository.getMyOrder(currentMember.getUuid(), pageable));
     }
 }
