@@ -197,10 +197,10 @@ class OrderControllerTest extends BaseControllerTest {
                                 fieldWithPath("last").description("마지막 페이지인지 여부"),
                                 fieldWithPath("totalElements").description("총 주문 갯수"),
                                 fieldWithPath("content[].orderId").description("주문 아이디"),
-                                fieldWithPath("content[].totalAmount").description("총 결제 금액"),
+                                fieldWithPath("content[].amount").description("총 결제 금액"),
                                 fieldWithPath("content[].orderName").description("주문 이름"),
-                                fieldWithPath("content[].thumbnailImageUrl").description("주문 썸네일 이미지 URL")
-
+                                fieldWithPath("content[].updatedDate").description("주문일시"),
+                                fieldWithPath("content[].thumbnailUrl").description("주문 썸네일 이미지 URL")
                         )
                 ))
         ;

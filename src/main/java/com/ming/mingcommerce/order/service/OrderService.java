@@ -4,7 +4,7 @@ import com.ming.mingcommerce.cart.model.CartLineDTO;
 import com.ming.mingcommerce.cart.repository.CartRepository;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.order.entity.Order;
-import com.ming.mingcommerce.order.model.MyOrderProjectionModel;
+import com.ming.mingcommerce.order.model.MyOrderModel;
 import com.ming.mingcommerce.order.model.OrderDetail;
 import com.ming.mingcommerce.order.model.OrderRequest;
 import com.ming.mingcommerce.order.model.OrderResponse;
@@ -14,7 +14,6 @@ import com.ming.mingcommerce.security.CurrentMember;
 import com.ming.mingcommerce.util.PagingObject;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,13 +81,8 @@ public class OrderService {
         return orderRepository.getOrderDetail(orderId);
     }
 
-    // 사용자 주문 조회. 최대 5개의 최신 주문을 조회한다.
-    public PagingObject<MyOrderProjectionModel> getMyOrder(CurrentMember currentMember, Pageable pageable) {
-        // Member 엔티티 타입으로 형변환
-        Member member = modelMapper.map(currentMember, Member.class);
-        Page<MyOrderProjectionModel> myOrder = orderRepository.getMyOrder(member.getUuid(), pageable);
-        return PagingObject.of(myOrder);
+    // 사용자의 전체 주문 조회
+    public PagingObject<MyOrderModel> getMyOrder(CurrentMember currentMember, Pageable pageable) {
+        return PagingObject.of(orderRepository.getMyOrder(currentMember.getUuid(), pageable));
     }
-
-
 }
