@@ -183,9 +183,10 @@ class OrderControllerTest extends BaseControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].orderId").exists())
-                .andExpect(jsonPath("$[*].totalAmount").exists())
+                .andExpect(jsonPath("$[*].amount").exists())
                 .andExpect(jsonPath("$[*].orderName").exists())
-                .andExpect(jsonPath("$[*].thumbnailImageUrl").exists())
+                .andExpect(jsonPath("$[*].thumbnailUrl").exists())
+                .andExpect(jsonPath("$[*].updatedDate").exists())
 
                 .andDo(document("get-my-order",
                         requestHeaders(
@@ -193,10 +194,10 @@ class OrderControllerTest extends BaseControllerTest {
                         ),
                         responseFields(
                                 fieldWithPath("[].orderId").description("주문 아이디"),
-                                fieldWithPath("[].totalAmount").description("총 결제 금액"),
+                                fieldWithPath("[].amount").description("총 결제 금액"),
                                 fieldWithPath("[].orderName").description("주문 이름"),
-                                fieldWithPath("[].thumbnailImageUrl").description("주문 썸네일 이미지 URL")
-
+                                fieldWithPath("[].thumbnailUrl").description("주문 썸네일 이미지 URL"),
+                                fieldWithPath("[].updatedDate").description("주문 생성(또는 업데이트)일자")
                         )
                 ))
         ;
