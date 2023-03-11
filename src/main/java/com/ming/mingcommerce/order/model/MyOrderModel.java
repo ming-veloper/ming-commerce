@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class MyOrderModel {
     private String orderId;
     private String orderName;
-    private Double amount;
-    private String thumbnailUrl;
+    private Double totalAmount;
+    private String thumbnailImageUrl;
     private LocalDateTime updatedDate;
 }
