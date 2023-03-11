@@ -16,18 +16,16 @@ public interface OrderRepository extends JpaRepository<Order, String> {
         return findById(orderId).orElseThrow(EntityNotFoundException::new);
     }
 
-    @Query(
-            """
-                    SELECT new com.ming.mingcommerce.order.model.OrderDetail(
-                        p.productId, p.productName, p.thumbnailImageUrl, ol.price, ol.quantity
-                    )
-                    FROM Order o
-                    JOIN Product p
-                    JOIN o.orderLineList ol
-                        ON ol.productId = p.productId
-                        WHERE o.orderId = :orderId
-                    """
-    )
+    @Query("""
+            SELECT new com.ming.mingcommerce.order.model.OrderDetail(
+                p.productId, p.productName, p.thumbnailImageUrl, ol.price, ol.quantity
+            )
+            FROM Order o
+            JOIN Product p
+            JOIN o.orderLineList ol
+                ON ol.productId = p.productId
+                WHERE o.orderId = :orderId
+            """)
     List<OrderDetail> getOrderDetail(String orderId);
 
     /**
@@ -49,15 +47,13 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param pageable   페이징 객체를 처리하기 위한 객체입니다.
      * @return 사용자의 주문 상품 목록
      */
-    @Query(
-            """
-                    SELECT new com.ming.mingcommerce.order.model.MyOrderModel(
-                        o.orderId, o.orderName, o.totalAmount, o.orderThumbnailUrl, o.modifiedDate
-                    ) FROM Order o
-                        WHERE o.member.uuid = :memberUuid
-                            AND o.orderStatus = 'COMPLETE'
-                    """
-    )
+    @Query("""
+            SELECT new com.ming.mingcommerce.order.model.MyOrderModel(
+                o.orderId, o.orderName, o.totalAmount, o.orderThumbnailUrl, o.modifiedDate
+            ) FROM Order o
+                WHERE o.member.uuid = :memberUuid
+                    AND o.orderStatus = 'COMPLETE'
+            """)
     Page<MyOrderModel> getMyOrder(String memberUuid, Pageable pageable);
 
 
