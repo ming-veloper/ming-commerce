@@ -18,15 +18,15 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     @Query(
             """
-            SELECT new com.ming.mingcommerce.order.model.OrderDetail(
-                p.productId, p.productName, p.thumbnailImageUrl, ol.price, ol.quantity
-            )
-            FROM Order o
-            JOIN Product p
-            JOIN o.orderLineList ol
-                ON ol.productId = p.productId
-                WHERE o.orderId = :orderId
-            """
+                    SELECT new com.ming.mingcommerce.order.model.OrderDetail(
+                        p.productId, p.productName, p.thumbnailImageUrl, ol.price, ol.quantity
+                    )
+                    FROM Order o
+                    JOIN Product p
+                    JOIN o.orderLineList ol
+                        ON ol.productId = p.productId
+                        WHERE o.orderId = :orderId
+                    """
     )
     List<OrderDetail> getOrderDetail(String orderId);
 
@@ -51,11 +51,12 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      */
     @Query(
             """
-            SELECT new com.ming.mingcommerce.order.model.MyOrderModel(
-                o.orderId, o.orderName, o.totalAmount, o.orderThumbnailUrl, o.modifiedDate
-            ) FROM Order o
-                WHERE o.member.uuid = :memberUuid
-            """
+                    SELECT new com.ming.mingcommerce.order.model.MyOrderModel(
+                        o.orderId, o.orderName, o.totalAmount, o.orderThumbnailUrl, o.modifiedDate
+                    ) FROM Order o
+                        WHERE o.member.uuid = :memberUuid
+                            AND o.orderStatus = 'COMPLETE'
+                    """
     )
     Page<MyOrderModel> getMyOrder(String memberUuid, Pageable pageable);
 
