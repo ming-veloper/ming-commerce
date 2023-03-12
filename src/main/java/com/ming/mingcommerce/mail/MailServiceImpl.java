@@ -14,20 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
-    private final MailConfig mailConfig;
+    private final MailSender mailSender;
     private final MemberRepository memberRepository;
-    @Value("${spring.mail.username}")
-    private String senderEmail;
+    private final String mailUsername;
     @Value("${ming.domain}")
     private String domainAddress;
 
     @Override
     @Transactional
     public String sendMail(String emailTo, CurrentMember currentMember) {
-        // 메일 생성
-        MailSender mailSender = mailConfig.getMailSender();
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(senderEmail);
+        mailMessage.setFrom(mailUsername);
         mailMessage.setTo(emailTo);
         mailMessage.setSubject("[밍커머스] 이메일 변경을 위한 인증 메일 입니다.");
         Member member = memberRepository.findMemberByEmail(currentMember.getEmail());
