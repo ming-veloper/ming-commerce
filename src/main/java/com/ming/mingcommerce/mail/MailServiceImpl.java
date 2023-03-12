@@ -4,7 +4,6 @@ import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.security.CurrentMember;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,7 @@ public class MailServiceImpl implements MailService {
     private final MailSender mailSender;
     private final MemberRepository memberRepository;
     private final String mailUsername;
-    @Value("${ming.domain}")
-    private String domainAddress;
+    private final String domainAddress;
 
     @Override
     @Transactional

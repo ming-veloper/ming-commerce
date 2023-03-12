@@ -39,4 +39,11 @@ public class MailConfig {
         if (password == null) password = System.getenv("MING_MAIL_SENDER_PASSWORD");
         return password;
     }
+
+    @Bean
+    String domainAddress(Environment env) {
+        String domainAddress = env.getProperty("ming.domain");
+        if (domainAddress == null) domainAddress = System.getenv("MING_DOMAIN");
+        return domainAddress;
+    }
 }

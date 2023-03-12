@@ -29,4 +29,4 @@ toss:
     secret-key: ${TOSS_SECRET_KEY}
 
 ming:
-  domain: https://api.mingcommerce.net
+  domain: ${MING_DOMAIN}
