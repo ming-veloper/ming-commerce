@@ -34,4 +34,16 @@ public class MemberException extends RuntimeException {
             super(message);
         }
     }
+
+    public static class CurrentlyInUseEmailException extends MemberException {
+        public CurrentlyInUseEmailException(String message) {
+            super(message);
+        }
+    }
+
+    public static class WrongTokenException extends MemberException {
+        public WrongTokenException(String message) {
+            super(message);
+        }
+    }
 }

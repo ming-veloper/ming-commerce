@@ -42,6 +42,7 @@ dependencies {
     implementation("com.auth0:java-jwt:4.2.1")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.modelmapper:modelmapper:3.1.1")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.h2database:h2")
@@ -50,6 +51,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
     testImplementation("org.springframework.security:spring-security-test")
+
     asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
 

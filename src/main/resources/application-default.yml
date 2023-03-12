@@ -11,6 +11,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  mail:
+    username: ${MING_MAIL_SENDER_EMAIL} # TODO 테스트를 위해서는 개인 이메일 계정을 환경변수에 세팅해주세요. 추후 밍커머스 이메일 계정으로 바꾸어야 합니다.
+    password: ${MING_MAIL_SENDER_PASSWORD}
 
 jwt:
   access-token-duration: 604800000 # valid 1 Week
@@ -24,3 +27,6 @@ admin:
 toss:
   payments:
     secret-key: ${TOSS_SECRET_KEY}
+
+ming:
+  domain: https://api.mingcommerce.net

@@ -12,6 +12,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+  mail:
+    username: test@tester.com
+    password: password
 
 
 jwt:
@@ -26,3 +29,6 @@ admin:
 toss:
   payments:
     secret-key: toss-test-secret-key
+
+ming:
+  domain: http://localhost:8080
