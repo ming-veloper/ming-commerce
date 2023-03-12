@@ -26,8 +26,7 @@ public class MailServiceImpl implements MailService {
         mailMessage.setTo(emailTo);
         mailMessage.setSubject("[밍커머스] 이메일 변경을 위한 인증 메일 입니다.");
         Member member = memberRepository.findMemberByEmail(currentMember.getEmail());
-
-        String authenticationLink = domainAddress + "/api/members" + "?token=" + member.getEmailCheckToken() + "&newEmail=" + emailTo;
+        String authenticationLink = domainAddress + "/update-user" + "?token=" + member.getEmailCheckToken() + "&email=" + emailTo;
         mailMessage.setText("[밍커머스 인증하기]" + authenticationLink);
         mailSender.send(mailMessage);
 

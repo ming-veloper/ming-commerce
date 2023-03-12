@@ -102,12 +102,19 @@ public class MemberService {
 
     @Transactional
     public void sendEmail(String emailTo, CurrentMember currentMember) {
-        if (Objects.equals(emailTo, currentMember.getEmail())) {
-            throw new MemberException.CurrentlyInUseEmailException(emailTo + "는 현재 사용중인 이메일입니다.");
-        }
-        Member member = memberRepository.findByEmail(currentMember.getEmail())
-                .orElseThrow(() -> new MemberException.MemberEmailNotFoundException("해당 이메일이 존재하지 않습니다"));
+        // 현재 설정된 이메일인지 검사
+        validateEmail(emailTo, currentMember);
+        Member member = memberRepository.findMemberByEmail(currentMember.getEmail());
         member.generateEmailAuthenticationToken();
         mailService.sendMail(emailTo, currentMember);
+    }
+
+    private void validateEmail(String emailTo, CurrentMember currentMember) {
+        if (Objects.equals(emailTo, currentMember.getEmail())) {
+            throw new MemberException.CurrentlyInUseEmailException(emailTo + "는 현재 설정된 이메일과 같습니다.");
+        }
+        memberRepository.findByEmail(emailTo).ifPresent((m) -> {
+            throw new MemberException.EmailDuplicatedException("이미 사용중인 이메일입니다.");
+        });
     }
 }

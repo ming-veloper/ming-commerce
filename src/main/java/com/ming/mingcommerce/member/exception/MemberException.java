@@ -41,6 +41,13 @@ public class MemberException extends RuntimeException {
         }
     }
 
+    public static class ExceedEmailTokenIssue extends MemberException {
+        public ExceedEmailTokenIssue(String message) {
+            super(message);
+        }
+    }
+
+
     public static class WrongTokenException extends MemberException {
         public WrongTokenException(String message) {
             super(message);

@@ -240,7 +240,7 @@ class MemberControllerTest extends BaseControllerTest {
         mockMvc.perform(get("/api/members/change-email")
                         .header(X_WWW_MING_AUTHORIZATION, tokenModel.getAccessToken())
                         .queryParam("token", member.getEmailCheckToken())
-                        .queryParam("newEmail", newEmail)
+                        .queryParam("email", newEmail)
 
                 ).andExpect(status().isOk())
                 .andDo(document("change-email",
@@ -248,7 +248,7 @@ class MemberControllerTest extends BaseControllerTest {
                                 headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")),
                         queryParameters(
                                 parameterWithName("token").description("인증을 위한 UUID 형식의 토큰"),
-                                parameterWithName("newEmail").description("변경되길 요청하는 이메일")
+                                parameterWithName("email").description("변경되길 요청하는 이메일")
                         )
 
                 ));

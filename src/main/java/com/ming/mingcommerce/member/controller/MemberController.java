@@ -63,17 +63,17 @@ public class MemberController {
      * 이메일 인증 성공시 유저의 이메일을 변경한다.
      *
      * @param token          유저 인증을 위한 UUID 형식의 토큰
-     * @param newEmail       변경을 원하는 이메일
+     * @param email       변경을 원하는 이메일
      * @param authentication 인증 객체
      * @return 변경된 이메일로 새로 발급한 access token 과 refresh token
      */
     @GetMapping("/change-email")
     public ResponseEntity<?> changeEmail(@Param("token") String token,
-                                         @Param("newEmail") String newEmail,
+                                         @Param("email") String email,
                                          Authentication authentication) {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember))
             throw new IllegalArgumentException();
-        JwtTokenModel tokenModel = memberService.changeEmail(token, newEmail, currentMember);
+        JwtTokenModel tokenModel = memberService.changeEmail(token, email, currentMember);
         // 새로운 액세스토큰과 리프레시 토큰 발급하여 반환
         return new ResponseEntity<>(tokenModel, HttpStatus.OK);
     }
