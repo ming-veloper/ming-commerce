@@ -1,5 +1,6 @@
 package com.ming.mingcommerce.member.service;
 
+import com.ming.mingcommerce.mail.MailService;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.member.exception.MemberException;
 import com.ming.mingcommerce.member.model.JwtTokenModel;
@@ -30,6 +31,7 @@ public class MemberService {
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Value("${admin.email}")
     private String adminEmail;
@@ -86,5 +88,26 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException.MemberEmailNotFoundException("Email cannot found: " + email));
         return modelMapper.map(member, MemberModel.class);
+    }
+
+    @Transactional
+    public JwtTokenModel changeEmail(String token, String newEmail, CurrentMember currentMember) {
+        Member member = memberRepository.findMemberByEmail(currentMember.getEmail());
+        if (!Objects.equals(token, member.getEmailCheckToken()))
+            throw new MemberException.WrongTokenException("토큰값이 일치하지 않습니다.");
+
+        Member changedMember = member.changeEmail(newEmail);
+        return jwtTokenUtil.issueToken(changedMember);
+    }
+
+    @Transactional
+    public void sendEmail(String emailTo, CurrentMember currentMember) {
+        if (Objects.equals(emailTo, currentMember.getEmail())) {
+            throw new MemberException.CurrentlyInUseEmailException(emailTo + "는 현재 사용중인 이메일입니다.");
+        }
+        Member member = memberRepository.findByEmail(currentMember.getEmail())
+                .orElseThrow(() -> new MemberException.MemberEmailNotFoundException("해당 이메일이 존재하지 않습니다"));
+        member.generateEmailAuthenticationToken();
+        mailService.sendMail(emailTo, currentMember);
     }
 }

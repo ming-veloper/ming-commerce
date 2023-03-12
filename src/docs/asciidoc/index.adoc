@@ -37,6 +37,19 @@ operation::login[]
 
 operation::get-member-info[]
 
+=== 이메일 변경을 위한 이메일 전송
+
+변경을 원하는 이메일로 이메일을 전송한다.
+인증을 위한 링크에는 UUID 형식의 토큰과 변경하기 원하는 이메일이 쿼리파리미터로 설정된다.
+
+operation::send-authentication-mail[]
+
+=== 이메일 인증 확인과 이메일 변경
+
+쿼리파리미터로 넘어온 토큰을 검증한 뒤, 이메일을 변경한다.
+
+operation::change-email[]
+
 == Product
 
 === 상품 데이터 삽입
@@ -109,6 +122,7 @@ operation::get-order-by-id[]
 operation::get-order-detail[]
 
 === 사용자의 주문 조회하기
+
 사용자의 주문을 페이징하여 조회한다.
 각 주문의 주문 아이디, 주문 이름, 총 결제 금액, 주문 이름, 주문썸네일, 주문생성일자를 반환한다.
 

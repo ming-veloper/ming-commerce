@@ -1,24 +1,26 @@
 package com.ming.mingcommerce.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ming.mingcommerce.member.model.LoginRequest;
-import com.ming.mingcommerce.member.model.RegisterRequest;
-import com.ming.mingcommerce.member.model.RegisterResponse;
+import com.ming.mingcommerce.BaseControllerTest;
+import com.ming.mingcommerce.mail.MailServiceImpl;
+import com.ming.mingcommerce.member.entity.Member;
+import com.ming.mingcommerce.member.entity.Role;
+import com.ming.mingcommerce.member.model.*;
 import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.member.service.MemberService;
+import com.ming.mingcommerce.security.CurrentMember;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -30,12 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles("test")
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class MemberControllerTest {
+class MemberControllerTest extends BaseControllerTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -49,7 +46,10 @@ class MemberControllerTest {
     ModelMapper modelMapper;
 
     @Autowired
-    private MemberRepository memberRepository;
+    MemberRepository memberRepository;
+
+    @MockBean
+    MailServiceImpl mailService;
 
 
     @AfterEach
@@ -191,6 +191,89 @@ class MemberControllerTest {
         ;
     }
 
+    @Test
+    @DisplayName("이메일 변경을 위한 이메일 인증 메일을 전송한다.")
+    void sendAuthenticationEmail_Success() throws Exception {
+        RegisterResponse member = createTestMember("syhoneyjam@naver.com", "ming123@");
+        MemberEmailAuthenticationRequest request = new MemberEmailAuthenticationRequest("newemail@test.com");
+        when(mailService.sendMail(anyString(), any())).thenReturn("success");
+        mockMvc.perform(post("/api/members/send-email")
+                        .header(X_WWW_MING_AUTHORIZATION, member.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                ).andExpect(status().isOk())
+                .andDo(document("send-authentication-mail",
+                        requestHeaders(
+                                headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")),
+                        requestFields(fieldWithPath("email").description("변경 요청 이메일"))
+                ))
+        ;
+    }
+
+    @Test
+    @DisplayName("현재 이메일과 변경하려는 이메일이 같다면 이메일 변경에 실패한다.")
+    void sendAuthenticationEmail_Fail() throws Exception {
+        RegisterResponse member = createTestMember("syhoneyjam@naver.com", "ming123@");
+        MemberEmailAuthenticationRequest request = new MemberEmailAuthenticationRequest("syhoneyjam@naver.com");
+        when(mailService.sendMail(anyString(), any())).thenReturn("success");
+        mockMvc.perform(post("/api/members/change-email")
+                .header(X_WWW_MING_AUTHORIZATION, member.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        ).andExpect(status().is4xxClientError())
+        ;
+    }
+
+    @Test
+    @DisplayName("이메일이 인증되어 이메일을 변경한다.")
+    void changeEmail_Success() throws Exception {
+        String currentEmail = "syhoneyjam@naver.com";
+        String newEmail = "yeonnex@gmail.com";
+
+        Member saveMember = saveMember(currentEmail);
+        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(saveMember);
+
+        when(mailService.sendMail(anyString(), any())).thenReturn("success");
+        memberService.sendEmail(newEmail, modelMapper.map(saveMember, CurrentMember.class));
+        Member member = memberRepository.findMemberByEmail(currentEmail);
+
+        mockMvc.perform(get("/api/members/change-email")
+                        .header(X_WWW_MING_AUTHORIZATION, tokenModel.getAccessToken())
+                        .queryParam("token", member.getEmailCheckToken())
+                        .queryParam("newEmail", newEmail)
+
+                ).andExpect(status().isOk())
+                .andDo(document("change-email",
+                        requestHeaders(
+                                headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")),
+                        queryParameters(
+                                parameterWithName("token").description("인증을 위한 UUID 형식의 토큰"),
+                                parameterWithName("newEmail").description("변경되길 요청하는 이메일")
+                        )
+
+                ));
+    }
+
+    @Test
+    @DisplayName("이메일 인증시 토큰이 불일치하여 이메일 변경에 실패한다")
+    void changeEmail_Fail() throws Exception {
+        String currentEmail = "syhoneyjam@naver.com";
+        String newEmail = "yeonnex@gmail.com";
+
+        Member saveMember = saveMember(currentEmail);
+        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(saveMember);
+
+        when(mailService.sendMail(anyString(), any())).thenReturn("success");
+        memberService.sendEmail(newEmail, modelMapper.map(saveMember, CurrentMember.class));
+
+        mockMvc.perform(get("/api/members")
+                .header(X_WWW_MING_AUTHORIZATION, tokenModel.getAccessToken())
+                .queryParam("token", "this-is-wrong-token")
+                .queryParam("newEmail", newEmail)
+
+        ).andExpect(status().is4xxClientError());
+    }
+
 
     private RegisterResponse createTestMember(String email, String password) {
         RegisterRequest registerRequest = RegisterRequest.builder()
@@ -200,5 +283,10 @@ class MemberControllerTest {
                 .build();
 
         return memberService.register(registerRequest);
+    }
+
+    private Member saveMember(String email) {
+        Member member = Member.builder().email(email).password("ming123@").role(Role.USER).memberName("밍밍이").build();
+        return memberRepository.save(member);
     }
 }
