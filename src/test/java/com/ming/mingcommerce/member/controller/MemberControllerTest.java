@@ -213,11 +213,10 @@ class MemberControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("현재 이메일과 변경하려는 이메일이 같다면 이메일 변경에 실패한다.")
     void sendAuthenticationEmail_Fail() throws Exception {
-        RegisterResponse member = createTestMember("syhoneyjam@naver.com", "ming123@");
+        createTestMember("syhoneyjam@naver.com", "ming123@");
         MemberEmailAuthenticationRequest request = new MemberEmailAuthenticationRequest("syhoneyjam@naver.com");
         when(mailService.sendMail(anyString(), any())).thenReturn("success");
         mockMvc.perform(post("/api/members/change-email")
-                .header(X_WWW_MING_AUTHORIZATION, member.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         ).andExpect(status().is4xxClientError())
@@ -231,24 +230,20 @@ class MemberControllerTest extends BaseControllerTest {
         String newEmail = "yeonnex@gmail.com";
 
         Member saveMember = saveMember(currentEmail);
-        JwtTokenModel tokenModel = jwtTokenUtil.issueToken(saveMember);
 
         when(mailService.sendMail(anyString(), any())).thenReturn("success");
         memberService.sendEmail(newEmail, modelMapper.map(saveMember, CurrentMember.class));
         Member member = memberRepository.findMemberByEmail(currentEmail);
 
         mockMvc.perform(get("/api/members/change-email")
-                        .header(X_WWW_MING_AUTHORIZATION, tokenModel.getAccessToken())
                         .queryParam("token", member.getEmailCheckToken())
-                        .queryParam("newEmail", newEmail)
+                        .queryParam("email", newEmail)
 
                 ).andExpect(status().isOk())
                 .andDo(document("change-email",
-                        requestHeaders(
-                                headerWithName(X_WWW_MING_AUTHORIZATION).description("인증헤더")),
                         queryParameters(
                                 parameterWithName("token").description("인증을 위한 UUID 형식의 토큰"),
-                                parameterWithName("newEmail").description("변경되길 요청하는 이메일")
+                                parameterWithName("email").description("변경되길 요청하는 이메일")
                         )
 
                 ));
@@ -269,7 +264,7 @@ class MemberControllerTest extends BaseControllerTest {
         mockMvc.perform(get("/api/members")
                 .header(X_WWW_MING_AUTHORIZATION, tokenModel.getAccessToken())
                 .queryParam("token", "this-is-wrong-token")
-                .queryParam("newEmail", newEmail)
+                .queryParam("email", newEmail)
 
         ).andExpect(status().is4xxClientError());
     }
