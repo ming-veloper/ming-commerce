@@ -91,11 +91,8 @@ public class MemberService {
     }
 
     @Transactional
-    public JwtTokenModel changeEmail(String token, String newEmail, CurrentMember currentMember) {
-        Member member = memberRepository.findMemberByEmail(currentMember.getEmail());
-        if (!Objects.equals(token, member.getEmailCheckToken()))
-            throw new MemberException.WrongTokenException("토큰값이 일치하지 않습니다.");
-
+    public JwtTokenModel changeEmail(String token, String newEmail) {
+        Member member = memberRepository.findMemberByEmailCheckToken(token);
         Member changedMember = member.changeEmail(newEmail);
         return jwtTokenUtil.issueToken(changedMember);
     }
