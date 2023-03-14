@@ -19,7 +19,6 @@ public class MailServiceImpl implements MailService {
     private final String domainAddress;
 
     @Override
-    @Transactional
     public String sendMail(String emailTo, CurrentMember currentMember) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(mailUsername);
