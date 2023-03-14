@@ -45,7 +45,12 @@ public class Member extends BaseTimeEntity {
 
     public Member changeEmail(String email) {
         this.email = email;
+        deleteToken();
         return this;
+    }
+
+    private void deleteToken() {
+        this.emailCheckToken = null;
     }
 
 }
