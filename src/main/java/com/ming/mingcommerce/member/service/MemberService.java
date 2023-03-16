@@ -1,5 +1,7 @@
 package com.ming.mingcommerce.member.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ming.mingcommerce.mail.EmailAuthenticationToken;
 import com.ming.mingcommerce.mail.MailService;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.member.exception.MemberException;
@@ -11,6 +13,7 @@ import com.ming.mingcommerce.member.repository.MemberRepository;
 import com.ming.mingcommerce.security.CurrentMember;
 import com.ming.mingcommerce.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -18,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -32,6 +36,7 @@ public class MemberService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
+    private final ObjectMapper objectMapper;
 
     @Value("${admin.email}")
     private String adminEmail;
@@ -91,19 +96,30 @@ public class MemberService {
     }
 
     @Transactional
-    public JwtTokenModel changeEmail(String token, String newEmail) {
-        Member member = memberRepository.findMemberByEmailCheckToken(token);
-        Member changedMember = member.changeEmail(newEmail);
+    @SneakyThrows
+    public JwtTokenModel changeEmail(String token) {
+        // Base64 로 인코딩된 token 을 디코딩한다
+        byte[] decode = Base64.getDecoder().decode(token.getBytes());
+        String result = new String(decode);
+        EmailAuthenticationToken emailToken = objectMapper.readValue(result, EmailAuthenticationToken.class);
+        Member member = memberRepository.findMemberByEmailCheckToken(emailToken.getEmailCheckToken());
+        Member changedMember = member.changeEmail(emailToken.getEmail());
         return jwtTokenUtil.issueToken(changedMember);
     }
 
+
     @Transactional
+    @SneakyThrows
     public void sendEmail(String emailTo, CurrentMember currentMember) {
         // 현재 설정된 이메일인지 검사
         validateEmail(emailTo, currentMember);
         Member member = memberRepository.findMemberByEmail(currentMember.getEmail());
-        member.generateEmailAuthenticationToken();
-        mailService.sendMail(emailTo, currentMember);
+        String emailCheckToken = member.generateEmailAuthenticationToken();
+        // "email"과 "emailCheckToken" 이 둘을 Base64 로 인코딩하여 하나의 "token"이라는 형태로 url 에 담는다
+        EmailAuthenticationToken emailToken = new EmailAuthenticationToken(emailTo, emailCheckToken);
+        String result = objectMapper.writeValueAsString(emailToken);
+        String encodedToken = Base64.getEncoder().encodeToString(result.getBytes());
+        mailService.sendMail(encodedToken, emailTo);
     }
 
     private void validateEmail(String emailTo, CurrentMember currentMember) {
