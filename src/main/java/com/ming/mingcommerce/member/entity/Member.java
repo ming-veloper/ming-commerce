@@ -35,17 +35,23 @@ public class Member extends BaseTimeEntity {
     /**
      * 토큰은 1시간에 한번만 생성할 수 있다.
      */
-    public void generateEmailAuthenticationToken() {
+    public String generateEmailAuthenticationToken() {
         if (emailTokenGeneratedAt != null && !(emailTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1)))) {
             throw new MemberException.ExceedEmailTokenIssue("인증메일은 1시간마다 발급할 수 있습니다.");
         }
-        this.emailCheckToken = UUID.randomUUID().toString();
         this.emailTokenGeneratedAt = LocalDateTime.now();
+        this.emailCheckToken = UUID.randomUUID().toString();
+        return this.emailCheckToken;
     }
 
     public Member changeEmail(String email) {
         this.email = email;
+        deleteToken();
         return this;
+    }
+
+    private void deleteToken() {
+        this.emailCheckToken = null;
     }
 
 }

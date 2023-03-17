@@ -2,6 +2,7 @@ package com.ming.mingcommerce.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ming.mingcommerce.BaseControllerTest;
+import com.ming.mingcommerce.mail.EmailAuthenticationToken;
 import com.ming.mingcommerce.mail.MailServiceImpl;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.member.entity.Role;
@@ -18,7 +19,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
+import java.util.Base64;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -84,7 +86,6 @@ class MemberControllerTest extends BaseControllerTest {
                                 fieldWithPath("refreshToken").description("리프레시토큰. 30일간 유효하다")
                         )
                 ))
-
         ;
     }
 
@@ -195,8 +196,9 @@ class MemberControllerTest extends BaseControllerTest {
     @DisplayName("이메일 변경을 위한 이메일 인증 메일을 전송한다.")
     void sendAuthenticationEmail_Success() throws Exception {
         RegisterResponse member = createTestMember("syhoneyjam@naver.com", "ming123@");
-        MemberEmailAuthenticationRequest request = new MemberEmailAuthenticationRequest("newemail@test.com");
-        when(mailService.sendMail(anyString(), any())).thenReturn("success");
+        String newEmail = "newemail@test.com";
+        MemberEmailAuthenticationRequest request = new MemberEmailAuthenticationRequest(newEmail);
+        when(mailService.sendMail(anyString(), anyString())).thenReturn("success");
         mockMvc.perform(post("/api/members/send-email")
                         .header(X_WWW_MING_AUTHORIZATION, member.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -215,7 +217,7 @@ class MemberControllerTest extends BaseControllerTest {
     void sendAuthenticationEmail_Fail() throws Exception {
         createTestMember("syhoneyjam@naver.com", "ming123@");
         MemberEmailAuthenticationRequest request = new MemberEmailAuthenticationRequest("syhoneyjam@naver.com");
-        when(mailService.sendMail(anyString(), any())).thenReturn("success");
+        when(mailService.sendMail(anyString(), anyString())).thenReturn("success");
         mockMvc.perform(post("/api/members/change-email")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -231,19 +233,19 @@ class MemberControllerTest extends BaseControllerTest {
 
         Member saveMember = saveMember(currentEmail);
 
-        when(mailService.sendMail(anyString(), any())).thenReturn("success");
         memberService.sendEmail(newEmail, modelMapper.map(saveMember, CurrentMember.class));
         Member member = memberRepository.findMemberByEmail(currentEmail);
 
-        mockMvc.perform(get("/api/members/change-email")
-                        .queryParam("token", member.getEmailCheckToken())
-                        .queryParam("email", newEmail)
+        EmailAuthenticationToken token = new EmailAuthenticationToken(newEmail, member.getEmailCheckToken());
+        String result = objectMapper.writeValueAsString(token);
+        String encodedToken = Base64.getEncoder().encodeToString(result.getBytes());
 
+        mockMvc.perform(get("/api/members/change-email")
+                        .queryParam("token", encodedToken)
                 ).andExpect(status().isOk())
                 .andDo(document("change-email",
                         queryParameters(
-                                parameterWithName("token").description("인증을 위한 UUID 형식의 토큰"),
-                                parameterWithName("email").description("변경되길 요청하는 이메일")
+                                parameterWithName("token").description("인증을 위한 Base64 형식의 토큰. 이메일과 이메일인증토큰가 들어있다.")
                         )
 
                 ));
@@ -258,13 +260,12 @@ class MemberControllerTest extends BaseControllerTest {
         Member saveMember = saveMember(currentEmail);
         JwtTokenModel tokenModel = jwtTokenUtil.issueToken(saveMember);
 
-        when(mailService.sendMail(anyString(), any())).thenReturn("success");
+        when(mailService.sendMail(anyString(), anyString())).thenReturn("success");
         memberService.sendEmail(newEmail, modelMapper.map(saveMember, CurrentMember.class));
 
         mockMvc.perform(get("/api/members")
                 .header(X_WWW_MING_AUTHORIZATION, tokenModel.getAccessToken())
                 .queryParam("token", "this-is-wrong-token")
-                .queryParam("email", newEmail)
 
         ).andExpect(status().is4xxClientError());
     }
