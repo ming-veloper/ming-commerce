@@ -3,6 +3,8 @@ package com.ming.mingcommerce.order.respository;
 import com.ming.mingcommerce.order.entity.Order;
 import com.ming.mingcommerce.order.model.MyOrderModel;
 import com.ming.mingcommerce.order.model.OrderDetail;
+import com.ming.mingcommerce.order.model.OrderProductDetail;
+import com.ming.mingcommerce.order.model.ProductDetail;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,17 +18,37 @@ public interface OrderRepository extends JpaRepository<Order, String> {
         return findById(orderId).orElseThrow(EntityNotFoundException::new);
     }
 
+    /**
+     * 주문 상세를 위한 주문 정보를 조회한다.
+     * @param orderId
+     * @return 주문이름, 주문총액, 주문날짜
+     */
     @Query("""
             SELECT new com.ming.mingcommerce.order.model.OrderDetail(
+                o.orderName, o.totalAmount, o.createdDate
+            )
+            FROM Order o
+                WHERE o.orderId = :orderId
+            """)
+    OrderDetail getOrderDetail(String orderId);
+
+    /**
+     * 주문 상세를 위한 주문상품 정보를 조회한다. 상품아이디, 상품이름, 썸네일, 주문상품가격, 주문상품수량을 반환한다.
+     *
+     * @param orderId
+     * @return 상품아이디, 상품이름, 썸네일, 주문상품가격, 주문상품수량을 반환한다.
+     */
+    @Query("""
+            SELECT new com.ming.mingcommerce.order.model.ProductDetail(
                 p.productId, p.productName, p.thumbnailImageUrl, ol.price, ol.quantity
             )
             FROM Order o
-            JOIN Product p
-            JOIN o.orderLineList ol
-                ON ol.productId = p.productId
-                WHERE o.orderId = :orderId
+                JOIN Product p
+                JOIN o.orderLineList ol
+                    ON ol.productId = p.productId
+                        WHERE o.orderId = :orderId
             """)
-    List<OrderDetail> getOrderDetail(String orderId);
+    List<ProductDetail> getOrderProductDetail(String orderId);
 
     /**
      * 사용자의 주문 목록을 조회합니다.
@@ -55,6 +77,13 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                     AND o.orderStatus = 'COMPLETE'
             """)
     Page<MyOrderModel> getMyOrder(String memberUuid, Pageable pageable);
+
+    // 주문 상세 조회
+    default OrderProductDetail getMyOrderDetail(String orderId) {
+        OrderDetail orderDetail = getOrderDetail(orderId);
+        List<ProductDetail> productDetailList = getOrderProductDetail(orderId);
+        return new OrderProductDetail(orderDetail, productDetailList);
+    }
 
 
 }

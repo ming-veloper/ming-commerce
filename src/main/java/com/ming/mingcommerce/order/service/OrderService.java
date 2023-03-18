@@ -5,7 +5,7 @@ import com.ming.mingcommerce.cart.repository.CartRepository;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.order.entity.Order;
 import com.ming.mingcommerce.order.model.MyOrderModel;
-import com.ming.mingcommerce.order.model.OrderDetail;
+import com.ming.mingcommerce.order.model.OrderProductDetail;
 import com.ming.mingcommerce.order.model.OrderRequest;
 import com.ming.mingcommerce.order.model.OrderResponse;
 import com.ming.mingcommerce.order.respository.OrderRepository;
@@ -75,10 +75,10 @@ public class OrderService {
     }
 
     // orderId 에 해당하는 주문 상세 조회
-    public List<OrderDetail> getOrderDetail(String orderId, CurrentMember currentMember) {
+    public OrderProductDetail getOrderDetail(String orderId, CurrentMember currentMember) {
         // 현재 요청의 사용자가 해당 주문을 조회할 수 있는지 검증
         validate(currentMember, orderId);
-        return orderRepository.getOrderDetail(orderId);
+        return orderRepository.getMyOrderDetail(orderId);
     }
 
     // 사용자의 전체 주문 조회
