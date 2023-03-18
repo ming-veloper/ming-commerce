@@ -13,13 +13,13 @@ import java.util.List;
 public class OrderProductDetail {
     private String orderName;
     private Double totalAmount;
-    private LocalDateTime createDate;
+    private LocalDateTime createdDate;
     private List<ProductDetail> productDetailList;
 
     public OrderProductDetail(OrderDetail orderDetail, List<ProductDetail> productDetailList) {
         this.orderName = orderDetail.getOrderName();
         this.totalAmount = orderDetail.getTotalAmount();
-        this.createDate = orderDetail.getCreateDate();
+        this.createdDate = orderDetail.getCreateDate();
         this.productDetailList = productDetailList;
     }
 }
