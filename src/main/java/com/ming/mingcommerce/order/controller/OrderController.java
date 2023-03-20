@@ -67,7 +67,7 @@ public class OrderController {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        var myOrders = orderService.getMyOrder(currentMember, pageable);
+        var myOrders = orderService.getMyOrderList(currentMember, pageable);
         return new ResponseEntity<>(myOrders, HttpStatus.OK);
     }
 
@@ -84,7 +84,7 @@ public class OrderController {
         if (!((authentication.getPrincipal()) instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        OrderProductDetail result = orderService.getOrderDetail(orderId, currentMember);
+        OrderProductDetail result = orderService.getOrderProductDetail(orderId, currentMember);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

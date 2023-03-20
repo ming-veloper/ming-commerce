@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
-    default Order findOrderByOrderId(String orderId) {
+    default Order findByOrderId(String orderId) {
         return findById(orderId).orElseThrow(EntityNotFoundException::new);
     }
 
@@ -76,7 +76,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                 WHERE o.member.uuid = :memberUuid
                     AND o.orderStatus = 'COMPLETE'
             """)
-    Page<MyOrderModel> getMyOrder(String memberUuid, Pageable pageable);
+    Page<MyOrderModel> getMyOrderList(String memberUuid, Pageable pageable);
 
     // 주문 상세 조회
     default OrderProductDetail getMyOrderDetail(String orderId) {

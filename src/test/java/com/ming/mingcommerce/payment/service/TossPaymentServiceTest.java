@@ -76,7 +76,7 @@ class TossPaymentServiceTest extends BaseServiceTest {
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.COMPLETE);
         // 주문이 완료되었으므로 카트라인의 삭제 여부가 true 로 변경된다
-        Order savedOrder = orderRepository.findOrderByOrderId(orderId);
+        Order savedOrder = orderRepository.findByOrderId(orderId);
         List<String> cartLineUuidList = savedOrder.getOrderLineList().stream().map(OrderLine::getCartLineUuid).toList();
         List<Boolean> cartLineDTOList = cartRepository.isCartLineUuidDeleted(cartLineUuidList);
         assertThat(cartLineDTOList.stream().allMatch((Boolean::booleanValue))).isTrue();
