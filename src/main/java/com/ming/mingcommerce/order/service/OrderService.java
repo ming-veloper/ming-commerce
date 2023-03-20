@@ -78,7 +78,7 @@ public class OrderService {
     public OrderProductDetail getOrderProductDetail(String orderId, CurrentMember currentMember) {
         // 현재 요청의 사용자가 해당 주문을 조회할 수 있는지 검증
         validate(currentMember, orderId);
-        return orderRepository.getMyOrderDetail(orderId);
+        return orderRepository.getMyOrderProductDetail(orderId);
     }
 
     // 사용자의 전체 주문 조회

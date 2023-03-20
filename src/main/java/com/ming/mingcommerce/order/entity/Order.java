@@ -2,6 +2,7 @@ package com.ming.mingcommerce.order.entity;
 
 import com.ming.mingcommerce.config.BaseTimeEntity;
 import com.ming.mingcommerce.member.entity.Member;
+import com.ming.mingcommerce.order.model.OrderDetail;
 import com.ming.mingcommerce.order.vo.OrderLine;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -78,5 +79,9 @@ public class Order extends BaseTimeEntity {
 
     public void completePay() {
         this.orderStatus = OrderStatus.COMPLETE;
+    }
+
+    public OrderDetail toOrderDetail(Order order) {
+        return new OrderDetail(order);
     }
 }

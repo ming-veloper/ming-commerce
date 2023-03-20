@@ -19,20 +19,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     }
 
     /**
-     * 주문 상세를 위한 주문 정보를 조회한다.
-     * @param orderId
-     * @return 주문이름, 주문총액, 주문날짜
-     */
-    @Query("""
-            SELECT new com.ming.mingcommerce.order.model.OrderDetail(
-                o.orderName, o.totalAmount, o.createdDate
-            )
-            FROM Order o
-                WHERE o.orderId = :orderId
-            """)
-    OrderDetail getOrderDetail(String orderId);
-
-    /**
      * 주문 상세를 위한 주문상품 정보를 조회한다. 상품아이디, 상품이름, 썸네일, 주문상품가격, 주문상품수량을 반환한다.
      *
      * @param orderId
@@ -79,8 +65,9 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     Page<MyOrderModel> getMyOrderList(String memberUuid, Pageable pageable);
 
     // 주문 상세 조회
-    default OrderProductDetail getMyOrderDetail(String orderId) {
-        OrderDetail orderDetail = getOrderDetail(orderId);
+    default OrderProductDetail getMyOrderProductDetail(String orderId) {
+        Order order = findByOrderId(orderId);
+        OrderDetail orderDetail = order.toOrderDetail(order);
         List<ProductDetail> productDetailList = getOrderProductDetail(orderId);
         return new OrderProductDetail(orderDetail, productDetailList);
     }
