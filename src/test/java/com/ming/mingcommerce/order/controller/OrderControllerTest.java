@@ -148,11 +148,15 @@ class OrderControllerTest extends BaseControllerTest {
                         .queryParam("orderId", orderResponse.getOrderId())
                         .header(X_WWW_MING_AUTHORIZATION, jwtTokenUtil.issueToken(member).getAccessToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*].productId").exists())
-                .andExpect(jsonPath("$[*].productName").exists())
-                .andExpect(jsonPath("$[*].thumbnailImageUrl").exists())
-                .andExpect(jsonPath("$[*].price").exists())
-                .andExpect(jsonPath("$[*].quantity").exists())
+                .andExpect(jsonPath("orderName").exists())
+                .andExpect(jsonPath("totalAmount").exists())
+                .andExpect(jsonPath("createdDate").exists())
+                .andExpect(jsonPath("productDetailList").exists())
+                .andExpect(jsonPath("$.productDetailList[0].productId").exists())
+                .andExpect(jsonPath("$.productDetailList[0].productName").exists())
+                .andExpect(jsonPath("$.productDetailList[0].thumbnailImageUrl").exists())
+                .andExpect(jsonPath("$.productDetailList[0].price").exists())
+                .andExpect(jsonPath("$.productDetailList[0].quantity").exists())
                 .andDo(document("get-order-detail",
                         requestHeaders(
                                 headerWithName(X_WWW_MING_AUTHORIZATION).description("인증 헤더")
@@ -161,11 +165,15 @@ class OrderControllerTest extends BaseControllerTest {
                                 parameterWithName("orderId").description("주문 아이디")
                         ),
                         responseFields(
-                                fieldWithPath("[].productId").description("상품 아이디"),
-                                fieldWithPath("[].productName").description("상품명"),
-                                fieldWithPath("[].thumbnailImageUrl").description("상품 썸네일 URL"),
-                                fieldWithPath("[].price").description("상품 가격"),
-                                fieldWithPath("[].quantity").description("상품 주문 수량")
+                                fieldWithPath("orderName").description("주문이름"),
+                                fieldWithPath("totalAmount").description("총주문금액"),
+                                fieldWithPath("createdDate").description("주문날짜"),
+                                fieldWithPath("productDetailList").description("주문상품리스트"),
+                                fieldWithPath("productDetailList[].productId").description("상품 아이디"),
+                                fieldWithPath("productDetailList[].productName").description("상품명"),
+                                fieldWithPath("productDetailList[].thumbnailImageUrl").description("상품 썸네일 URL"),
+                                fieldWithPath("productDetailList[].price").description("상품 가격"),
+                                fieldWithPath("productDetailList[].quantity").description("상품 주문 수량")
                         )
                 ))
         ;

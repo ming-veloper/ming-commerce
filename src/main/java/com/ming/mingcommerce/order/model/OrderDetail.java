@@ -1,18 +1,21 @@
 package com.ming.mingcommerce.order.model;
 
+import com.ming.mingcommerce.order.entity.Order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class OrderDetail {
-    private String productId;
-    private String productName;
-    private String thumbnailImageUrl;
-    private Double price;
-    private Long quantity;
+    private String orderName;
+    private Double totalAmount;
+    private LocalDateTime createDate;
+
+    public OrderDetail(Order order) {
+        this(order.getOrderName(), order.getTotalAmount(), order.getCreatedDate());
+    }
 }

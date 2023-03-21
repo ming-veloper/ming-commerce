@@ -5,7 +5,7 @@ import com.ming.mingcommerce.cart.repository.CartRepository;
 import com.ming.mingcommerce.member.entity.Member;
 import com.ming.mingcommerce.order.entity.Order;
 import com.ming.mingcommerce.order.model.MyOrderModel;
-import com.ming.mingcommerce.order.model.OrderDetail;
+import com.ming.mingcommerce.order.model.OrderProductDetail;
 import com.ming.mingcommerce.order.model.OrderRequest;
 import com.ming.mingcommerce.order.model.OrderResponse;
 import com.ming.mingcommerce.order.respository.OrderRepository;
@@ -60,7 +60,7 @@ public class OrderService {
 
     // 주문 조회시 해당 주문 조회 권한이 있는 요청인지 검증
     private void validate(CurrentMember currentMember, String orderId) {
-        Order order = orderRepository.findOrderByOrderId(orderId);
+        Order order = orderRepository.findByOrderId(orderId);
         if (!Objects.equals(order.getMember().getEmail(), currentMember.getEmail())) {
             throw new IllegalArgumentException("해당 주문을 조회할 수 있는 사용자가 아닙니다.");
         }
@@ -70,19 +70,19 @@ public class OrderService {
     public OrderResponse getOrder(String orderId, CurrentMember currentMember) {
         // 현재 요청의 사용자가 해당 주문을 조회할 수 있는지 검증
         validate(currentMember, orderId);
-        Order order = orderRepository.findOrderByOrderId(orderId);
+        Order order = orderRepository.findByOrderId(orderId);
         return modelMapper.map(order, OrderResponse.class);
     }
 
     // orderId 에 해당하는 주문 상세 조회
-    public List<OrderDetail> getOrderDetail(String orderId, CurrentMember currentMember) {
+    public OrderProductDetail getOrderProductDetail(String orderId, CurrentMember currentMember) {
         // 현재 요청의 사용자가 해당 주문을 조회할 수 있는지 검증
         validate(currentMember, orderId);
-        return orderRepository.getOrderDetail(orderId);
+        return orderRepository.getMyOrderProductDetail(orderId);
     }
 
     // 사용자의 전체 주문 조회
-    public PagingObject<MyOrderModel> getMyOrder(CurrentMember currentMember, Pageable pageable) {
-        return PagingObject.of(orderRepository.getMyOrder(currentMember.getUuid(), pageable));
+    public PagingObject<MyOrderModel> getMyOrderList(CurrentMember currentMember, Pageable pageable) {
+        return PagingObject.of(orderRepository.getMyOrderList(currentMember.getUuid(), pageable));
     }
 }

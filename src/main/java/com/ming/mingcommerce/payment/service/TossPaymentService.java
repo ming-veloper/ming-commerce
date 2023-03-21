@@ -37,7 +37,7 @@ public class TossPaymentService implements PaymentService {
         PaymentApprovalResponse response = tossPaymentApprovalApi.processPay(request);
         // 결제 히스토리 저장
         savePaymentHistory(response);
-        Order order = orderRepository.findOrderByOrderId(response.getOrderId());
+        Order order = orderRepository.findByOrderId(response.getOrderId());
         // 주문 상태 바꾸기 PENDING -> COMPLETE
         successPay(order, currentMember);
         return response;
@@ -53,7 +53,7 @@ public class TossPaymentService implements PaymentService {
 
     // 결제 요청 금액과 주문 금액이 같은지 검증
     private void validateAmount(PaymentApprovalRequest request) {
-        Order order = orderRepository.findOrderByOrderId(request.getOrderId());
+        Order order = orderRepository.findByOrderId(request.getOrderId());
         order.validateAmount(request.getAmount());
     }
 

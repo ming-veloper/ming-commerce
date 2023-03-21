@@ -1,7 +1,7 @@
 package com.ming.mingcommerce.order.controller;
 
 import com.ming.mingcommerce.member.entity.Member;
-import com.ming.mingcommerce.order.model.OrderDetail;
+import com.ming.mingcommerce.order.model.OrderProductDetail;
 import com.ming.mingcommerce.order.model.OrderRequest;
 import com.ming.mingcommerce.order.model.OrderResponse;
 import com.ming.mingcommerce.order.service.OrderService;
@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -69,24 +67,24 @@ public class OrderController {
         if (!(authentication.getPrincipal() instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        var myOrders = orderService.getMyOrder(currentMember, pageable);
+        var myOrders = orderService.getMyOrderList(currentMember, pageable);
         return new ResponseEntity<>(myOrders, HttpStatus.OK);
     }
 
 
     /**
-     * 주문 상세를 조회한다
+     * 주문 상세를 조회한다.
      *
      * @param authentication
      * @param orderId
-     * @return orderDetail
+     * @return 주문 정보(주문이름, 주문총액, 주문날짜)와 주문상품 정보(상품아이디, 상품이름, 썸네일, 가격, 주문수량)를 반환한다.
      */
     @GetMapping("/order-detail")
     public ResponseEntity<?> getOrderDetail(Authentication authentication, @Param("orderId") String orderId) {
         if (!((authentication.getPrincipal()) instanceof CurrentMember currentMember)) {
             throw new IllegalArgumentException();
         }
-        List<OrderDetail> result = orderService.getOrderDetail(orderId, currentMember);
+        OrderProductDetail result = orderService.getOrderProductDetail(orderId, currentMember);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
