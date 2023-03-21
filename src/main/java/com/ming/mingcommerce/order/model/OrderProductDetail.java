@@ -17,9 +17,9 @@ public class OrderProductDetail {
     private List<ProductDetail> productDetailList;
 
     public OrderProductDetail(OrderDetail orderDetail, List<ProductDetail> productDetailList) {
-        this.orderName = orderDetail.getOrderName();
-        this.totalAmount = orderDetail.getTotalAmount();
-        this.createdDate = orderDetail.getCreateDate();
-        this.productDetailList = productDetailList;
+        this(orderDetail.getOrderName(),
+                orderDetail.getTotalAmount(),
+                orderDetail.getCreateDate(),
+                productDetailList);
     }
 }
